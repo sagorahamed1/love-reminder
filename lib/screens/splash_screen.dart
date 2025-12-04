@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controllers/auth_controller.dart';
+import '../screens/auth/login_screen.dart';
+import '../screens/onboarding/onboarding_screen.dart';
+import '../services/shared_prefs_service.dart';
 import '../utils/app_colors.dart';
 import '../widgets/custom_text.dart';
 import 'main_screen.dart';
@@ -38,13 +41,26 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animationController.forward();
 
-    // Auto navigate to main screen after splash
-    Future.delayed(const Duration(seconds: 3), () {
+    // Auto navigate based on auth and onboarding status after splash
+    Future.delayed(const Duration(seconds: 3), () async {
       if (mounted) {
-        Get.find<AuthController>().mockLogin();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const MainScreen()),
-        );
+        final authController = Get.find<AuthController>();
+        final isAuthenticated = authController.isAuthenticated;
+        final hasCompletedOnboarding = await SharedPrefsService.isOnboardingComplete;
+
+        // Remove the mock login since we want real authentication
+        // Get.find<AuthController>().mockLogin();
+
+        if (!isAuthenticated) {
+          // User not logged in, show login screen
+          Get.offAllNamed('/login');
+        } else if (!hasCompletedOnboarding) {
+          // User is logged in but hasn't completed onboarding
+          Get.offAllNamed('/onboarding');
+        } else {
+          // User is logged in and has completed onboarding
+          Get.offAllNamed('/main');
+        }
       }
     });
   }

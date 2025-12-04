@@ -9,6 +9,9 @@ import 'controllers/reminder_controller.dart';
 import 'controllers/memory_controller.dart';
 import 'controllers/mood_controller.dart';
 import 'controllers/theme_controller.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/main_screen.dart';
+import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
 import 'utils/app_colors.dart';
 
@@ -62,6 +65,13 @@ class MyLoveReminderApp extends StatelessWidget {
             ),
             scaffoldBackgroundColor: AppColors.background,
           ),
+          initialRoute: '/',
+          getPages: [
+            GetPage(name: '/', page: () => const SplashScreen()),
+            GetPage(name: '/login', page: () => const LoginScreen()),
+            GetPage(name: '/onboarding', page: () => const OnboardingScreen()),
+            GetPage(name: '/main', page: () => const MainScreen()),
+          ],
           home: child,
         );
       },
