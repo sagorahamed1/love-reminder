@@ -21,9 +21,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
@@ -56,7 +54,7 @@ class MyLoveReminderApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return GetMaterialApp(
-          title: 'My Love Reminder',
+          title: 'Love Reminder',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             useMaterial3: true,

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:get/get.dart';
 import '../models/memory.dart';
 
@@ -52,5 +53,46 @@ class MemoryController extends GetxController {
       ),
     ];
     update();
+  }
+
+  Future<void> addMemory({
+    required String title,
+    required String content,
+    required String type,
+    File? imageFile,
+  }) async {
+    isLoading.value = true;
+
+    try {
+      // In a real app, you would upload the image to Firebase Storage
+      // For now, we'll use a placeholder URL when imageFile is provided
+      String? imageUrl;
+      if (imageFile != null) {
+        // In a production app, you'd upload the image here and get the URL
+        // For now, using a placeholder image URL
+        imageUrl = 'https://via.placeholder.com/600x400.png?text=Memory+Photo';
+      }
+
+      // Create a new memory with a unique ID
+      final newMemory = Memory(
+        id: DateTime.now().millisecondsSinceEpoch.toString(), // Simple ID generation
+        title: title,
+        content: content,
+        type: type,
+        imageUrl: imageUrl,
+        coupleId: '1', // Assuming default couple ID for now
+        createdBy: '1', // Assuming current user ID
+        createdAt: DateTime.now(),
+        tags: [], // Empty tags for new memories
+      );
+
+      // Add to the beginning of the list (most recent first)
+      memories.insert(0, newMemory);
+      update();
+    } catch (e) {
+      throw Exception('Failed to add memory: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

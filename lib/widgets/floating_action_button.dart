@@ -3,9 +3,16 @@ import '../utils/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomFloatingActionButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
+  final IconData icon;
+  final String? tooltip;
 
-  const CustomFloatingActionButton({super.key, required this.onPressed});
+  const CustomFloatingActionButton({
+    super.key,
+    this.onPressed,
+    this.icon = Icons.add,
+    this.tooltip,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +35,7 @@ class CustomFloatingActionButton extends StatelessWidget {
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(28.r),
-          child: Icon(Icons.add, color: Colors.white, size: 24.sp),
+          child: Icon(icon, color: Colors.white, size: 24.sp),
         ),
       ),
     );

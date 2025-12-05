@@ -48,7 +48,7 @@ class CustomAppBar extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomText(
-                          text: 'My Love Reminder',
+                          text: 'Love Reminder',
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,

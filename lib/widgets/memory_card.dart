@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/memory.dart';
+import '../screens/memory_detail_screen.dart';
 import '../utils/app_colors.dart';
 
 class MemoryCard extends StatelessWidget {
@@ -45,11 +47,7 @@ class MemoryCard extends StatelessWidget {
                     gradient: AppColors.primaryGradient.scale(0.3),
                   ),
                   child: Center(
-                    child: Icon(
-                      Icons.photo,
-                      size: 48.sp,
-                      color: Colors.white,
-                    ),
+                    child: Icon(Icons.photo, size: 48.sp, color: Colors.white),
                   ),
                 ),
                 errorWidget: (context, url, error) => Container(
@@ -59,11 +57,7 @@ class MemoryCard extends StatelessWidget {
                     gradient: AppColors.primaryGradient.scale(0.3),
                   ),
                   child: Center(
-                    child: Icon(
-                      Icons.photo,
-                      size: 48.sp,
-                      color: Colors.white,
-                    ),
+                    child: Icon(Icons.photo, size: 48.sp, color: Colors.white),
                   ),
                 ),
               ),
@@ -169,35 +163,6 @@ class MemoryCard extends StatelessWidget {
                   ),
                 ),
 
-                // Tags
-                if (memory.tags.isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.only(top: 12.h),
-                    child: Wrap(
-                      spacing: 6.w,
-                      runSpacing: 6.h,
-                      children: memory.tags.map((tag) {
-                        return Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8.w,
-                            vertical: 4.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: Text(
-                            '#$tag',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-
                 // Footer
                 Padding(
                   padding: EdgeInsets.only(top: 12.h),
@@ -229,7 +194,7 @@ class MemoryCard extends StatelessWidget {
                         const Spacer(),
                         TextButton(
                           onPressed: () {
-                            // Handle view details
+                            Get.to(() => MemoryDetailScreen(memory: memory));
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
