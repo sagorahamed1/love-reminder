@@ -39,7 +39,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
               // Header
               CustomText(
                 text: 'Our Memories',
-                fontSize: 28,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
                 textAlign: TextAlign.left,
@@ -47,7 +47,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
 
               CustomText(
                 text: 'Precious moments we share together',
-                fontSize: 16,
+
                 color: AppColors.textSecondary,
                 textAlign: TextAlign.left,
               ),
@@ -73,63 +73,12 @@ class _MemoryScreenState extends State<MemoryScreen> {
               ),
               SizedBox(height: 10.h),
 
-              // Memory Stats
-              Container(
-                padding: EdgeInsets.all(20.w),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFF3E5F0), Color(0xFFFFE0E0)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16.r),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomText(
-                            text: 'Memory Collection',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                            textAlign: TextAlign.left,
-                          ),
-                          const SizedBox(height: 4),
-                          CustomText(
-                            text: '${memories.length} beautiful moments saved',
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 48.w,
-                      height: 48.w,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.calendar_today,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10.h),
-
               // Memories List
               Expanded(
                 child: filteredMemories.isEmpty
                     ? _buildEmptyState()
                     : ListView.builder(
+                        physics: const ClampingScrollPhysics(), // Better scroll physics
                         padding: EdgeInsets.zero,
                         itemCount: filteredMemories.length,
                         itemBuilder: (context, index) {

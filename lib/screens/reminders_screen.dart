@@ -5,8 +5,8 @@ import '../controllers/reminder_controller.dart';
 import '../utils/app_colors.dart';
 import '../widgets/reminder_card.dart';
 import '../widgets/filter_chips.dart';
-import '../widgets/stats_cards.dart';
 import '../widgets/custom_text.dart';
+import '../widgets/empty_state.dart';
 
 class RemindersScreen extends StatefulWidget {
   const RemindersScreen({super.key});
@@ -41,15 +41,15 @@ class _RemindersScreenState extends State<RemindersScreen> {
               // Header
               CustomText(
                 text: 'Love Reminders',
-                fontSize: 28,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
                 textAlign: TextAlign.left,
               ),
-            
+
               CustomText(
                 text: 'Sweet reminders for a sweeter life together',
-                fontSize: 16,
+
                 color: AppColors.textSecondary,
                 textAlign: TextAlign.left,
               ),
@@ -79,18 +79,17 @@ class _RemindersScreenState extends State<RemindersScreen> {
               ),
               SizedBox(height: 10.h),
 
-              // Stats Cards
-              StatsCards(
-                totalReminders: reminders.length,
-                completedToday: reminders.where((r) => r.completed).length,
-              ),
-              const SizedBox(height: 10),
-
               // Reminders List
               Expanded(
                 child: filteredReminders.isEmpty
-                    ? _buildEmptyState()
+                    ? EmptyState(
+                        title: 'No reminders yet',
+                        message: 'Create your first love reminder!',
+                        icon: Icons.favorite,
+                      )
                     : ListView.builder(
+                        physics:
+                            const ClampingScrollPhysics(), // Better scroll physics
                         padding: EdgeInsets.zero,
                         itemCount: filteredReminders.length,
                         itemBuilder: (context, index) {
@@ -115,44 +114,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80.w,
-            height: 80.w,
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight.withOpacity(0.3),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.favorite,
-              size: 40,
-              color: AppColors.primary,
-            ),
-          ),
-          SizedBox(height: 24.h),
-          CustomText(
-            text: 'No reminders yet',
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 8.h),
-          CustomText(
-            text: 'Create your first love reminder!',
-            fontSize: 16,
-            color: AppColors.textSecondary,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
     );
   }
 }

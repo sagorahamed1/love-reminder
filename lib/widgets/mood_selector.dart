@@ -38,7 +38,7 @@ class _MoodSelectorState extends State<MoodSelector> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.w),
+      padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
@@ -61,10 +61,11 @@ class _MoodSelectorState extends State<MoodSelector> {
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 6.h),
 
           // Mood Grid
           GridView.builder(
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -124,11 +125,11 @@ class _MoodSelectorState extends State<MoodSelector> {
           // Note Input
           if (_showNote && _selectedMood.isNotEmpty)
             Padding(
-              padding: EdgeInsets.only(top: 16.h),
+              padding: EdgeInsets.only(top: 10.h),
               child: Column(
                 children: [
                   Container(height: 1.h, color: Colors.grey.shade200),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 10.h),
                   TextField(
                     onChanged: (value) {
                       _note = value;

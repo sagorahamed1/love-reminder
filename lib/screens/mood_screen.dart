@@ -22,29 +22,31 @@ class MoodScreen extends StatelessWidget {
               // Header
               CustomText(
                 text: 'Mood Sharing',
-                fontSize: 28,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
                 textAlign: TextAlign.left,
               ),
-          
+
               CustomText(
                 text: 'Share your feelings with your loved one',
-                fontSize: 16,
+
                 color: AppColors.textSecondary,
                 textAlign: TextAlign.left,
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 10.h),
 
               Expanded(
                 child: SingleChildScrollView(
+                  physics:
+                      const BouncingScrollPhysics(), // Better scroll physics
                   child: Column(
                     children: [
                       // Partner Mood Status
                       if (moodController.partnerMood.value != null)
                         Container(
                           padding: EdgeInsets.all(20.w),
-                          margin: EdgeInsets.only(bottom: 24.h),
+                          margin: EdgeInsets.only(bottom: 16.h),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [Color(0xFFFCE4EC), Color(0xFFFFE0E6)],
@@ -118,82 +120,6 @@ class MoodScreen extends StatelessWidget {
                                 color: Color(0xFFAD1457),
                                 textAlign: TextAlign.right,
                               ),
-                            ],
-                          ),
-                        ),
-
-                      // Current Mood Display
-                      if (moodController.currentMood.value != null)
-                        Container(
-                          padding: EdgeInsets.all(20.w),
-                          margin: EdgeInsets.only(bottom: 24.h),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              CustomText(
-                                text: 'Your Current Mood',
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                                textAlign: TextAlign.left,
-                              ),
-                              SizedBox(height: 16.h),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w,
-                                  vertical: 8.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.surface,
-                                  borderRadius: BorderRadius.circular(20.r),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    CustomText(
-                                      text: _getMoodEmoji(
-                                        moodController.currentMood.value!.mood,
-                                      ),
-                                      fontSize: 24,
-                                      textAlign: TextAlign.left,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    CustomText(
-                                      text: moodController
-                                          .currentMood
-                                          .value!
-                                          .mood
-                                          .toUpperCase(),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textPrimary,
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (moodController.currentMood.value!.note !=
-                                  null)
-                                Padding(
-                                  padding: EdgeInsets.only(top: 12.h),
-                                  child: CustomText(
-                                    text:
-                                        '"${moodController.currentMood.value!.note}"',
-                                    fontSize: 14,
-                                    color: AppColors.textSecondary,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
                             ],
                           ),
                         ),

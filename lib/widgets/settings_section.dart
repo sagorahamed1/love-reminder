@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lovereminder/widgets/custom_text.dart';
 import '../utils/app_colors.dart';
 
 class SettingsItem {
@@ -41,16 +42,14 @@ class SettingsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsets.all(20.r),
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
+          CustomText(
+            left: 24.w,
+            top: 16.h,
+            bottom: 0,
+            text: title,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
           ),
 
           ...items.asMap().entries.map((entry) {
@@ -71,7 +70,7 @@ class SettingsSection extends StatelessWidget {
                   onTap: item.onTap,
                   leading: Container(
                     width: 32.w,
-                    height: 32.w,
+                    height: 28.w,
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       shape: BoxShape.circle,
@@ -106,7 +105,7 @@ class SettingsSection extends StatelessWidget {
                       ),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 16.w,
-                    vertical: 4.h,
+                    vertical: 0.h,
                   ),
                 ),
               ],

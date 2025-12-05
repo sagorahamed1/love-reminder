@@ -18,7 +18,6 @@ class CustomBottomNavigation extends StatelessWidget {
       {'icon': Icons.notifications, 'label': 'Reminders'},
       {'icon': Icons.photo_camera, 'label': 'Memory'},
       {'icon': Icons.favorite, 'label': 'Mood'},
-      {'icon': Icons.bar_chart, 'label': 'Stats'},
       {'icon': Icons.settings, 'label': 'Settings'},
     ];
 
@@ -32,65 +31,58 @@ class CustomBottomNavigation extends StatelessWidget {
           ),
         ),
       ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: tabs.asMap().entries.map((entry) {
-              final index = entry.key;
-              final tab = entry.value;
-              final isActive = currentIndex == index;
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: tabs.asMap().entries.map((entry) {
+            final index = entry.key;
+            final tab = entry.value;
+            final isActive = currentIndex == index;
 
-              return GestureDetector(
-                onTap: () => onTap(index),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 8.h,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: isActive ? AppColors.primaryGradient : null,
-                    color: isActive ? null : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: isActive
-                        ? [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
-                              blurRadius: 8.r,
-                              offset: Offset(0, 2.h),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        tab['icon'] as IconData,
-                        size: 20.sp,
+            return GestureDetector(
+              onTap: () => onTap(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  gradient: isActive ? AppColors.primaryGradient : null,
+                  color: isActive ? null : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12.r),
+                  boxShadow: isActive
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 8.r,
+                            offset: Offset(0, 2.h),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      tab['icon'] as IconData,
+                      size: 20.sp,
+                      color: isActive ? Colors.white : AppColors.textSecondary,
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      tab['label'] as String,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
                         color: isActive
                             ? Colors.white
                             : AppColors.textSecondary,
                       ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        tab['label'] as String,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: isActive
-                              ? Colors.white
-                              : AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              );
-            }).toList(),
-          ),
+              ),
+            );
+          }).toList(),
         ),
       ),
     );

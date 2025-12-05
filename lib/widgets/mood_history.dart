@@ -39,16 +39,17 @@ class MoodHistory extends StatelessWidget {
 
           if (history.isNotEmpty)
             ListView.separated(
+              padding: EdgeInsets.zero,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: history.length,
-              separatorBuilder: (context, index) => SizedBox(height: 12.h),
+              separatorBuilder: (context, index) => SizedBox(height: 8.h),
               itemBuilder: (context, index) {
                 final mood = history[index];
                 final isOwnMood = mood.userId == '1'; // Mock user ID
 
                 return Container(
-                  padding: EdgeInsets.all(12.w),
+                  padding: EdgeInsets.all(8.r),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(12.r),

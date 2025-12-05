@@ -12,7 +12,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   late AnimationController _logoController;
   late Animation<double> _logoScaleAnimation;
   late Animation<double> _logoFadeAnimation;
@@ -48,15 +49,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    _textSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _textController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    _textSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+          CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic),
+        );
 
     _buttonController = AnimationController(
       duration: const Duration(milliseconds: 1000),
@@ -151,7 +147,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 SlideTransition(
                   position: _textSlideAnimation,
                   child: CustomText(
-                    text: 'Connect with your partner\nShare your beautiful moments',
+                    text:
+                        'Connect with your partner\nShare your beautiful moments',
                     fontSize: 16.sp,
                     color: AppColors.textSecondary,
                     textAlign: TextAlign.center,
@@ -186,14 +183,19 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                               child: ElevatedButton(
                                 onPressed: authController.isLoading.value
                                     ? null
-                                    : () => _handleGoogleLogin(authController),
+                                    : () {
+                                        _handleGoogleLogin(authController);
+                                      },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   foregroundColor: Colors.black87,
+
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12.r),
                                     side: BorderSide(
-                                      color: AppColors.primary.withValues(alpha: 0.2),
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.2,
+                                      ),
                                     ),
                                   ),
                                   elevation: 0,
@@ -283,7 +285,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
                 // Terms and privacy text
                 CustomText(
-                  text: 'By continuing, you agree to our Terms of Service and Privacy Policy',
+                  text:
+                      'By continuing, you agree to our Terms of Service and Privacy Policy',
                   fontSize: 12.sp,
                   color: AppColors.textSecondary,
                   textAlign: TextAlign.center,
@@ -305,11 +308,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   }
 
   void _handleAppleLogin(AuthController authController) async {
-    try {
-      await authController.signInWithApple();
-    } catch (e) {
-      _showErrorDialog('Apple Sign In failed: $e');
-    }
+    Get.toNamed("/onboarding");
   }
 
   void _showErrorDialog(String message) {

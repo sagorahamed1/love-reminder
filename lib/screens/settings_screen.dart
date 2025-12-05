@@ -37,15 +37,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       // Header
                       CustomText(
                         text: 'Settings',
-                        fontSize: 28,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
                         textAlign: TextAlign.left,
                       ),
-                     
+
                       CustomText(
                         text: 'Customize your love reminder experience',
-                        fontSize: 16,
+
                         color: AppColors.textSecondary,
                         textAlign: TextAlign.left,
                       ),
@@ -53,6 +53,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                       Expanded(
                         child: SingleChildScrollView(
+                          physics:
+                              const BouncingScrollPhysics(), // Better scroll physics
                           child: Column(
                             children: [
                               ConnectionCodeCard(
@@ -94,72 +96,72 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                               SizedBox(height: 24.h),
 
-                              // Preferences Section
-                              SettingsSection(
-                                title: 'Preferences',
-                                items: [
-                                  SettingsItem(
-                                    icon: Icons.notifications,
-                                    title: 'Notifications',
-                                    subtitle: _notifications
-                                        ? 'Enabled'
-                                        : 'Disabled',
-                                    trailing: Switch(
-                                      value: _notifications,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _notifications = value;
-                                        });
-                                      },
-                                      activeColor: AppColors.primary,
-                                    ),
-                                    onTap: () {
-                                      setState(() {
-                                        _notifications = !_notifications;
-                                      });
-                                    },
-                                  ),
-                                  SettingsItem(
-                                    icon: Icons.volume_up,
-                                    title: 'Sounds',
-                                    subtitle: _sounds ? 'On' : 'Off',
-                                    trailing: Switch(
-                                      value: _sounds,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _sounds = value;
-                                        });
-                                      },
-                                      activeColor: AppColors.primary,
-                                    ),
-                                    onTap: () {
-                                      setState(() {
-                                        _sounds = !_sounds;
-                                      });
-                                    },
-                                  ),
-                                  SettingsItem(
-                                    icon: Icons.palette,
-                                    title: 'Theme',
-                                    subtitle: themeController.currentTheme.value
-                                        .toUpperCase(),
-                                    onTap: () {
-                                      // Handle theme selection
-                                    },
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 24.h),
+                              // // Preferences Section
+                              // SettingsSection(
+                              //   title: 'Preferences',
+                              //   items: [
+                              //     SettingsItem(
+                              //       icon: Icons.notifications,
+                              //       title: 'Notifications',
+                              //       subtitle: _notifications
+                              //           ? 'Enabled'
+                              //           : 'Disabled',
+                              //       trailing: Switch(
+                              //         value: _notifications,
+                              //         onChanged: (value) {
+                              //           setState(() {
+                              //             _notifications = value;
+                              //           });
+                              //         },
+                              //         activeColor: AppColors.primary,
+                              //       ),
+                              //       onTap: () {
+                              //         setState(() {
+                              //           _notifications = !_notifications;
+                              //         });
+                              //       },
+                              //     ),
+                              //     SettingsItem(
+                              //       icon: Icons.volume_up,
+                              //       title: 'Sounds',
+                              //       subtitle: _sounds ? 'On' : 'Off',
+                              //       trailing: Switch(
+                              //         value: _sounds,
+                              //         onChanged: (value) {
+                              //           setState(() {
+                              //             _sounds = value;
+                              //           });
+                              //         },
+                              //         activeColor: AppColors.primary,
+                              //       ),
+                              //       onTap: () {
+                              //         setState(() {
+                              //           _sounds = !_sounds;
+                              //         });
+                              //       },
+                              //     ),
+                              //     SettingsItem(
+                              //       icon: Icons.palette,
+                              //       title: 'Theme',
+                              //       subtitle: themeController.currentTheme.value
+                              //           .toUpperCase(),
+                              //       onTap: () {
+                              //         // Handle theme selection
+                              //       },
+                              //     ),
+                              //   ],
+                              // ),
+                              // SizedBox(height: 24.h),
 
                               // Theme Selector
-                              ThemeSelector(
-                                currentTheme:
-                                    themeController.currentTheme.value,
-                                onThemeChanged: (theme) {
-                                  themeController.setTheme(theme);
-                                },
-                              ),
-                              SizedBox(height: 24.h),
+                              // ThemeSelector(
+                              //   currentTheme:
+                              //       themeController.currentTheme.value,
+                              //   onThemeChanged: (theme) {
+                              //     themeController.setTheme(theme);
+                              //   },
+                              // ),
+                              // SizedBox(height: 24.h),
 
                               // Privacy Section
                               SettingsSection(
@@ -168,7 +170,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   SettingsItem(
                                     icon: Icons.security,
                                     title: 'Privacy Settings',
-                                    subtitle: 'Manage',
+                                    subtitle: 'View and manage your privacy',
+                                    onTap: () {
+                                      // Handle privacy settings
+                                    },
+                                  ),
+
+                                  SettingsItem(
+                                    icon: Icons.security,
+                                    title: 'Terms of Service',
+                                    subtitle: 'view terms and conditions',
+                                    onTap: () {
+                                      // Handle privacy settings
+                                    },
+                                  ),
+
+                                  SettingsItem(
+                                    icon: Icons.security,
+                                    title: 'About Us',
+                                    subtitle: 'view terms and conditions',
                                     onTap: () {
                                       // Handle privacy settings
                                     },
@@ -180,7 +200,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               // Logout Button
                               Container(
                                 width: double.infinity,
-                                padding: EdgeInsets.symmetric(vertical: 16.h),
+
                                 decoration: BoxDecoration(
                                   color: Colors.red.shade50,
                                   borderRadius: BorderRadius.circular(12.r),

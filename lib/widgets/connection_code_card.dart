@@ -16,7 +16,7 @@ class ConnectionCodeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.w),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFFFCE4EC), Color(0xFFFFE0E6)],
@@ -39,7 +39,7 @@ class ConnectionCodeCard extends StatelessWidget {
           SizedBox(height: 10.h),
 
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12.r),
@@ -57,12 +57,12 @@ class ConnectionCodeCard extends StatelessWidget {
                   child: Text(
                     connectionCode,
                     style: const TextStyle(
-                      fontSize: 24,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
                       fontFamily: 'monospace',
                       letterSpacing: 2,
-                    ).copyWith(fontSize: 24.sp),
+                    ).copyWith(fontSize: 18.sp),
                   ),
                 ),
                 Row(
@@ -100,7 +100,7 @@ class ConnectionCodeCard extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 12.h),
+          SizedBox(height: 6.h),
           Text(
             'Share this code with your partner to connect',
             style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),

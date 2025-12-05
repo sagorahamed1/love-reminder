@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/memory.dart';
 import '../utils/app_colors.dart';
 
@@ -32,29 +33,38 @@ class MemoryCard extends StatelessWidget {
           if (memory.type == 'photo' && memory.imageUrl != null)
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-              child: Container(
+              child: CachedNetworkImage(
+                imageUrl: memory.imageUrl!,
                 height: 200.h,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient.scale(0.3),
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  height: 200.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient.scale(0.3),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.photo,
+                      size: 48.sp,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-                child: Image.network(
-                  memory.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient.scale(0.3),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.photo,
-                          size: 48.sp,
-                          color: Colors.white,
-                        ),
-                      ),
-                    );
-                  },
+                errorWidget: (context, url, error) => Container(
+                  height: 200.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient.scale(0.3),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.photo,
+                      size: 48.sp,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),

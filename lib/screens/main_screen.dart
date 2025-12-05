@@ -6,7 +6,6 @@ import '../widgets/floating_action_button.dart';
 import 'reminders_screen.dart';
 import 'memory_screen.dart';
 import 'mood_screen.dart';
-import 'stats_screen.dart';
 import 'settings_screen.dart';
 import '../widgets/create_reminder_modal.dart';
 
@@ -25,124 +24,77 @@ class _MainScreenState extends State<MainScreen> {
     const RemindersScreen(),
     const MemoryScreen(),
     const MoodScreen(),
-    const StatsScreen(),
     const SettingsScreen(),
   ];
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: Container(
-  //       decoration: const BoxDecoration(
-  //         gradient: AppColors.backgroundGradient,
-  //       ),
-  //       child: Column(
-  //         children: [
-  //           const CustomAppBar(),
-  //           Expanded(
-  //             child: _screens[_currentIndex],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //     bottomNavigationBar: CustomBottomNavigation(
-  //       currentIndex: _currentIndex,
-  //       onTap: (index) {
-  //         setState(() {
-  //           _currentIndex = index;
-  //         });
-  //       },
-  //     ),
-  //     floatingActionButton: CustomFloatingActionButton(
-  //       onPressed: () {
-  //         setState(() {
-  //           _showCreateModal = true;
-  //         });
-  //       },
-  //     ),
-  //     floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-  //     body: _showCreateModal
-  //         ? Stack(
-  //             children: [
-  //               _screens[_currentIndex],
-  //               CreateReminderModal(
-  //                 onClose: () {
-  //                   setState(() {
-  //                     _showCreateModal = false;
-  //                   });
-  //                 },
-  //               ),
-  //             ],
-  //           )
-  //         : Container(
-  //             decoration: const BoxDecoration(
-  //               gradient: AppColors.backgroundGradient,
-  //             ),
-  //             child: Column(
-  //               children: [
-  //                 const CustomAppBar(),
-  //                 Expanded(
-  //                   child: _screens[_currentIndex],
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _showCreateModal
-          ? Stack(
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    gradient: AppColors.backgroundGradient,
-                  ),
-                  child: Column(
-                    children: [
-                      const CustomAppBar(),
-                      Expanded(child: _screens[_currentIndex]),
-                    ],
-                  ),
-                ),
-                CreateReminderModal(
-                  onClose: () {
-                    setState(() {
-                      _showCreateModal = false;
-                    });
-                  },
-                ),
-              ],
-            )
-          : Container(
-              decoration: const BoxDecoration(
-                gradient: AppColors.backgroundGradient,
-              ),
-              child: Column(
+    return WillPopScope(
+      // Add back button handling
+      onWillPop: () async {
+        // On Android, if the current screen is not the first screen (reminders),
+        // navigate back to reminders screen instead of closing the app
+        if (_currentIndex != 0) {
+          setState(() {
+            _currentIndex = 0;
+          });
+          return false; // Don't exit the app
+        }
+        return true; // Exit the app
+      },
+      child: Scaffold(
+        extendBody: true, // Extend body to behind bottom navigation
+        body: _showCreateModal
+            ? Stack(
                 children: [
-                  const CustomAppBar(),
-                  Expanded(child: _screens[_currentIndex]),
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: AppColors.backgroundGradient,
+                    ),
+                    child: Column(
+                      children: [
+                        const CustomAppBar(),
+                        Expanded(child: _screens[_currentIndex]),
+                      ],
+                    ),
+                  ),
+                  CreateReminderModal(
+                    onClose: () {
+                      setState(() {
+                        _showCreateModal = false;
+                      });
+                    },
+                  ),
                 ],
+              )
+            : Container(
+                decoration: const BoxDecoration(
+                  gradient: AppColors.backgroundGradient,
+                ),
+                child: Column(
+                  children: [
+                    const CustomAppBar(),
+                    Expanded(child: _screens[_currentIndex]),
+                  ],
+                ),
               ),
-            ),
-      bottomNavigationBar: CustomBottomNavigation(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        bottomNavigationBar: CustomBottomNavigation(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
+        floatingActionButton: CustomFloatingActionButton(
+          onPressed: () {
+            setState(() {
+              _showCreateModal = true;
+            });
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
-      floatingActionButton: CustomFloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _showCreateModal = true;
-          });
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
