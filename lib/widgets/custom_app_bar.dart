@@ -7,7 +7,8 @@ import '../utils/app_colors.dart';
 import 'custom_text.dart';
 
 class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({super.key});
+  final String title;
+  const CustomAppBar({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,7 @@ class CustomAppBar extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomText(
-                          text: 'Love Reminder',
+                          text: '$title',
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,

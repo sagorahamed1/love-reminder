@@ -78,7 +78,8 @@ class _MemoryScreenState extends State<MemoryScreen> {
                 child: filteredMemories.isEmpty
                     ? _buildEmptyState()
                     : ListView.builder(
-                        physics: const ClampingScrollPhysics(), // Better scroll physics
+                        physics:
+                            const ClampingScrollPhysics(), // Better scroll physics
                         padding: EdgeInsets.zero,
                         itemCount: filteredMemories.length,
                         itemBuilder: (context, index) {
@@ -90,6 +91,8 @@ class _MemoryScreenState extends State<MemoryScreen> {
                         },
                       ),
               ),
+
+              SizedBox(height: 55.h),
             ],
           ),
         );

@@ -39,21 +39,21 @@ class _RemindersScreenState extends State<RemindersScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              CustomText(
-                text: 'Love Reminders',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-                textAlign: TextAlign.left,
-              ),
+              // CustomText(
+              //   text: 'Love Reminders',
+              //   fontSize: 22,
+              //   fontWeight: FontWeight.bold,
+              //   color: AppColors.textPrimary,
+              //   textAlign: TextAlign.left,
+              // ),
 
-              CustomText(
-                text: 'Sweet reminders for a sweeter life together',
+              // CustomText(
+              //   text: 'Sweet reminders for a sweeter life together',
 
-                color: AppColors.textSecondary,
-                textAlign: TextAlign.left,
-              ),
-              SizedBox(height: 10.h),
+              //   color: AppColors.textSecondary,
+              //   textAlign: TextAlign.left,
+              // ),
+              // SizedBox(height: 10.h),
 
               // Filter Chips
               FilterChips(
@@ -110,6 +110,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
                         },
                       ),
               ),
+
+              SizedBox(height: 55.h),
             ],
           ),
         );

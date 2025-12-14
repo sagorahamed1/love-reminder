@@ -141,6 +141,8 @@ class MoodScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
+              SizedBox(height: 55.h),
             ],
           ),
         );

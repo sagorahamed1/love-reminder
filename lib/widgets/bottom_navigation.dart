@@ -16,9 +16,9 @@ class CustomBottomNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     final tabs = [
       {'icon': Icons.notifications, 'label': 'Reminders'},
-      {'icon': Icons.photo_camera, 'label': 'Memory'},
-      {'icon': Icons.favorite, 'label': 'Mood'},
-      {'icon': Icons.settings, 'label': 'Settings'},
+      {'icon': Icons.photo_camera, 'label': ' Memory '},
+      {'icon': Icons.favorite, 'label': '  Mood  '},
+      {'icon': Icons.settings, 'label': ' Settings'},
     ];
 
     return Container(
