@@ -308,7 +308,7 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   void _handleAppleLogin(AuthController authController) async {
-    Get.toNamed("/onboarding");
+    authController.handleLogIn();
   }
 
   void _showErrorDialog(String message) {

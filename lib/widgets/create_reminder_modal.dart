@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../controllers/reminder_controller.dart';
 import '../providers/reminder_provider.dart';
 import '../models/reminder.dart';
 import '../utils/app_colors.dart';
@@ -15,6 +17,8 @@ class CreateReminderModal extends StatefulWidget {
 }
 
 class _CreateReminderModalState extends State<CreateReminderModal> {
+
+  ReminderController reminderController = Get.put(ReminderController());
   final _titleController = TextEditingController();
   final _messageController = TextEditingController();
   TimeOfDay _selectedTime = TimeOfDay.now();
@@ -189,10 +193,10 @@ class _CreateReminderModalState extends State<CreateReminderModal> {
                       SizedBox(height: 16.h),
 
                       // Time
-                      const Text(
+                       Text(
                         'Time',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 14.h,
                           fontWeight: FontWeight.w500,
                           color: AppColors.textPrimary,
                         ),
@@ -350,8 +354,11 @@ class _CreateReminderModalState extends State<CreateReminderModal> {
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 8),
+
+                      SizedBox(height: 16.h),
+
                       GridView.builder(
+                        padding: EdgeInsets.zero,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -394,70 +401,9 @@ class _CreateReminderModalState extends State<CreateReminderModal> {
                           );
                         },
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 6.h),
 
-                      // Attachment Options
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.all(12.w),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.photo,
-                                    color: Colors.blue,
-                                    size: 16,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Photo',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.all(12.w),
-                              decoration: BoxDecoration(
-                                color: Colors.purple.shade50,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.mic,
-                                    color: Colors.purple,
-                                    size: 16,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Voice',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.purple,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+
                     ],
                   ),
                 ),
@@ -576,21 +522,29 @@ class _CreateReminderModalState extends State<CreateReminderModal> {
     });
 
     try {
-      final reminder = Reminder(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: _titleController.text,
-        message: _messageController.text.isEmpty
-            ? null
-            : _messageController.text,
-        time: _formatTimeOfDay(_selectedTime),
-        days: _selectedDays,
-        emoji: _selectedEmoji.isEmpty ? null : _selectedEmoji,
-        fromUserId: '1', // Mock user ID
-        toUserId: '2', // Mock partner ID
-        createdAt: DateTime.now(),
-      );
+      // final reminder = Reminder(
+      //   id: DateTime.now().millisecondsSinceEpoch.toString(),
+      //   title: _titleController.text,
+      //   message: _messageController.text.isEmpty
+      //       ? null
+      //       : _messageController.text,
+      //   time: _formatTimeOfDay(_selectedTime),
+      //   days: _selectedDays,
+      //   emoji: _selectedEmoji.isEmpty ? null : _selectedEmoji,
+      //   fromUserId: '1', // Mock user ID
+      //   toUserId: '2', // Mock partner ID
+      //   createdAt: DateTime.now(),
+      // );
+      //
+      var reminderMessage = {
+          "name": "${_titleController.text}",
+          "body": "${_messageController.text}",
+          "dateTime": "2025-12-20T16:00:00.000Z"
+      };
 
-      await context.read<ReminderProvider>().addReminder(reminder);
+
+      reminderController.createReminder(body: reminderMessage);
+
       widget.onClose();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,72 +1,87 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
-import '../models/reminder.dart';
+import '../models/getreminder_model.dart';
+import '../services/api_client.dart';
+import '../services/api_constants.dart';
 
 class ReminderController extends GetxController {
-  var reminders = <Reminder>[].obs;
-  var isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    _loadMockReminders();
+    getReminder();
   }
 
-  void _loadMockReminders() {
-    reminders.value = [
-      Reminder(
-        id: '1',
-        title: 'Take your medicine',
-        message: 'Don\'t forget your vitamins, my love! 💊',
-        time: '08:00',
-        days: ['daily'],
-        emoji: '💊',
-        hasVoice: true,
-        fromUserId: '2',
-        toUserId: '1',
-        streak: 5,
-        createdAt: DateTime.now(),
-        fromPartner: true,
-      ),
-      Reminder(
-        id: '2',
-        title: 'Maghrib Prayer Time',
-        message: 'Time for Maghrib prayer 🕔',
-        time: '18:30',
-        days: ['daily'],
-        emoji: '🕔',
-        hasPhoto: true,
-        fromUserId: '1',
-        toUserId: '2',
-        completed: true,
-        streak: 12,
-        createdAt: DateTime.now(),
-      ),
-      Reminder(
-        id: '3',
-        title: 'Drink Water',
-        message: 'Stay hydrated, sweetheart! 💧',
-        time: '14:00',
-        days: ['daily'],
-        emoji: '💧',
-        fromUserId: '2',
-        toUserId: '1',
-        streak: 3,
-        createdAt: DateTime.now(),
-        fromPartner: true,
-      ),
-      Reminder(
-        id: '4',
-        title: 'Sleep Time',
-        message: 'Good night, love! 😴',
-        time: '23:00',
-        days: ['daily'],
-        emoji: '😴',
-        fromUserId: '1',
-        toUserId: '2',
-        streak: 7,
-        createdAt: DateTime.now(),
-      ),
-    ];
-    update();
+
+
+  RxInt page = 1.obs;
+  var totalPage = (-1);
+  var currectPage = (-1);
+  var totalResult = (-1);
+
+  void loadMore() {
+    print(
+      "==========================================total page $totalPage page No: ${page.value} == total result $totalResult",
+    );
+    if (totalPage > page.value) {
+      page.value += 1;
+      getReminder();
+      print("**********************print here");
+      update();
+    }
+    print("**********************print here**************");
   }
+
+
+
+
+
+  RxBool reviewLoading = false.obs;
+  RxList<GetReminderModel> getAllReminders = <GetReminderModel>[].obs;
+  getReminder({String? id}) async {
+    if (page.value == 1) {
+      reviewLoading(true);
+      getAllReminders.clear();
+    }
+    var response = await ApiClient.getData(
+      '${ApiConstants.getReminder(page.value.toString())}',
+    );
+    if (response.statusCode == 200) {
+      totalPage =
+          jsonDecode(response.body['pagination']['totalPages'].toString()) ?? 0;
+      totalResult =
+          jsonDecode(response.body['pagination']['totalCount'].toString()) ?? 0;
+      var data = List<GetReminderModel>.from(
+        response.body["data"].map((x) => GetReminderModel.fromJson(x)),
+      );
+      getAllReminders.addAll(data);
+      update();
+      reviewLoading(false);
+    } else {
+      reviewLoading(false);
+    }
+  }
+
+
+
+
+  RxBool createReminderLoading = false.obs;
+
+  createReminder({var body}) async {
+    createReminderLoading(true);
+
+    var response = await ApiClient.postData('/patient/pay-instant-call', jsonEncode(body));
+    if (response.statusCode == 200 || response.statusCode == 201) {
+
+      Get.back();
+
+      createReminderLoading(false);
+    } else {
+      createReminderLoading(false);
+    }
+  }
+
+
+
 }

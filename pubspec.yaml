@@ -50,6 +50,8 @@ dependencies:
   flutter_svg: ^2.0.9
   google_fonts:
   get: ^4.7.2
+  mime_type: ^1.0.1
+  socket_io_client: ^3.1.2
 
   # Authentication dependencies
   firebase_core: ^2.24.2

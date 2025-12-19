@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:lovereminder/models/getreminder_model.dart';
 import '../models/reminder.dart';
 import '../utils/app_colors.dart';
 
 class ReminderCard extends StatelessWidget {
-  final Reminder reminder;
+  final GetReminderModel reminder;
   final VoidCallback onToggle;
 
   const ReminderCard({

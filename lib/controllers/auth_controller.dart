@@ -4,8 +4,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import '../helpers/prefs_helper.dart';
 import '../models/user.dart' as AppUser;
+import '../services/api_client.dart';
+import '../services/api_constants.dart';
 import '../services/shared_prefs_service.dart';
+import '../services/socket_services.dart';
+import '../utils/app_constant.dart';
 
 class AuthController extends GetxController {
   Rxn<AppUser.User> user = Rxn<AppUser.User>();
@@ -204,4 +209,55 @@ class AuthController extends GetxController {
     user.value = null;
     update();
   }
+
+
+
+
+
+
+
+
+
+  ///************************************************************************///
+  ///===============Log in================<>
+  RxBool logInLoading = false.obs;
+
+  handleLogIn() async {
+    logInLoading.value = true;
+    var headers = {'Content-Type': 'application/json'};
+    var body = {"email": "temp1.mamun@gmail.com", "password": "1qazxsw2"};
+    var response = await ApiClient.postData(
+      ApiConstants.signInEndPoint,
+      jsonEncode(body),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var data = response.body['data'];
+      PrefsHelper.setString(
+        AppConstants.bearerToken,
+        response.body["data"]['tokens']["accessToken"],
+      );
+      PrefsHelper.setString(AppConstants.email, "sagor@gmail.com");
+      PrefsHelper.setString(AppConstants.name, data["user"]['name']);
+      PrefsHelper.setString(AppConstants.image, data["user"]['profileImage']);
+      PrefsHelper.setString(AppConstants.userId, data["user"]['_id']);
+      PrefsHelper.setBool(AppConstants.isLogged, true);
+
+
+      Get.toNamed("/onboarding");
+
+
+      logInLoading(false);
+
+      // SocketServices socketServices = SocketServices();
+      // socketServices.init(userId: data["user"]['_id'], fcmToken: "nai");
+      // chatController.unReadMessage();
+
+
+    }
+  }
+
+
+
 }
