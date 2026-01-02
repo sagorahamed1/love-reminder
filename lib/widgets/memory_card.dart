@@ -14,7 +14,7 @@ class MemoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isOwnMemory = memory.createdBy == '1'; // Mock user ID
+    final isOwnMemory = memory.isSender == true; // From API response
 
     return Container(
       decoration: BoxDecoration(
@@ -31,35 +31,58 @@ class MemoryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Memory Image
-          if (memory.type == 'photo' && memory.imageUrl != null)
+          // Memory Images (multiple if available)
+          if (memory.images != null && memory.images!.isNotEmpty)
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-              child: CachedNetworkImage(
-                imageUrl: memory.imageUrl!,
+              child: SizedBox(
                 height: 200.h,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  height: 200.h,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient.scale(0.3),
-                  ),
-                  child: Center(
-                    child: Icon(Icons.photo, size: 48.sp, color: Colors.white),
-                  ),
+                child: PageView.builder(
+                  itemCount: memory.images!.length,
+                  itemBuilder: (context, index) {
+                    String imageUrl = memory.images![index];
+                    // If the image URL is not a full URL, prepend the base URL
+                    if (!imageUrl.startsWith('http')) {
+                      imageUrl = 'https://6c0hk6c2-8089.inc1.devtunnels.ms/upload/$imageUrl';
+                    }
+                    return CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        height: 200.h,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.primaryGradient.scale(0.3),
+                        ),
+                        child: Center(
+                          child: Icon(Icons.photo, size: 48.sp, color: Colors.white),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        height: 200.h,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.primaryGradient.scale(0.3),
+                        ),
+                        child: Center(
+                          child: Icon(Icons.photo, size: 48.sp, color: Colors.white),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                errorWidget: (context, url, error) => Container(
-                  height: 200.h,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient.scale(0.3),
-                  ),
-                  child: Center(
-                    child: Icon(Icons.photo, size: 48.sp, color: Colors.white),
-                  ),
-                ),
+              ),
+            )
+          else
+            Container(
+              height: 200.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryGradient.scale(0.3),
+              ),
+              child: Center(
+                child: Icon(Icons.photo, size: 48.sp, color: Colors.white),
               ),
             ),
 
@@ -80,9 +103,7 @@ class MemoryCard extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        memory.type == 'photo'
-                            ? Icons.photo_camera
-                            : Icons.note,
+                        Icons.photo_library, // Generic icon for memories
                         size: 16.sp,
                         color: Colors.white,
                       ),
@@ -93,7 +114,7 @@ class MemoryCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            memory.title,
+                            memory.title ?? 'No Title',
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w600,
@@ -109,7 +130,7 @@ class MemoryCard extends StatelessWidget {
                               ),
                               SizedBox(width: 4.w),
                               Text(
-                                DateFormat.yMMMd().format(memory.createdAt),
+                                DateFormat.yMMMd().format(memory.createdAt ?? DateTime.now()),
                                 style: TextStyle(
                                   fontSize: 12.sp,
                                   color: AppColors.textLight,
@@ -133,7 +154,7 @@ class MemoryCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.person,
+                            isOwnMemory ? Icons.person : Icons.favorite,
                             size: 12.sp,
                             color: AppColors.primary,
                           ),
@@ -153,15 +174,47 @@ class MemoryCard extends StatelessWidget {
                 ),
                 SizedBox(height: 12.h),
 
-                // Content
+                // Message
                 Text(
-                  memory.content,
+                  memory.message ?? '',
                   style: TextStyle(
                     fontSize: 14.sp,
                     color: AppColors.textSecondary,
                     height: 1.4,
                   ),
                 ),
+
+                // Tags
+                if (memory.tags != null && memory.tags!.isNotEmpty)
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.h),
+                    child: Wrap(
+                      spacing: 6.w,
+                      runSpacing: 6.h,
+                      children: memory.tags!
+                          .map(
+                            (tag) => Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 4.h,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryLight,
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              child: Text(
+                                '#$tag',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
 
                 // Footer
                 Padding(
@@ -181,11 +234,11 @@ class MemoryCard extends StatelessWidget {
                         Icon(
                           Icons.favorite,
                           size: 16.sp,
-                          color: AppColors.primary,
+                          color: memory.isFavorited == true ? Colors.red : AppColors.textLight,
                         ),
                         SizedBox(width: 6.w),
                         Text(
-                          'Memory saved',
+                          memory.isFavorited == true ? 'Favorited' : 'Memory saved',
                           style: TextStyle(
                             fontSize: 12.sp,
                             color: AppColors.textSecondary,

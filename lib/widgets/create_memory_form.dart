@@ -18,47 +18,44 @@ class CreateMemoryForm extends StatefulWidget {
 
 class _CreateMemoryFormState extends State<CreateMemoryForm> {
   final MemoryController _memoryController = Get.find<MemoryController>();
-  
+
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  String _selectedType = 'note';
-  File? _selectedImage;
+  final TextEditingController _tagsController = TextEditingController();
+  List<File> _selectedImages = [];
   bool _isLoading = false;
 
   @override
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
+    _tagsController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImages() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    
-    if (image != null) {
+    final List<XFile>? images = await picker.pickMultiImage();
+
+    if (images != null && images.isNotEmpty) {
+      List<File> newFiles = images.map((xFile) => File(xFile.path)).toList();
       setState(() {
-        _selectedImage = File(image.path);
+        _selectedImages.addAll(newFiles);
       });
     }
   }
 
-  Future<void> _submitMemory() async {
-    if (_titleController.text.trim().isEmpty || 
-        _contentController.text.trim().isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill in all required fields',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
+  Future<void> _removeImage(int index) async {
+    setState(() {
+      _selectedImages.removeAt(index);
+    });
+  }
 
-    if (_selectedType == 'photo' && _selectedImage == null) {
+  Future<void> _submitMemory() async {
+    if (_titleController.text.trim().isEmpty) {
       Get.snackbar(
         'Error',
-        'Please select an image for photo memories',
+        'Please enter a title',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -70,30 +67,53 @@ class _CreateMemoryFormState extends State<CreateMemoryForm> {
     });
 
     try {
-      await _memoryController.addMemory(
+      // Split tags by comma and trim whitespace
+      List<String> tags = [];
+      if (_tagsController.text.trim().isNotEmpty) {
+        tags = _tagsController.text
+            .split(',')
+            .map((tag) => tag.trim())
+            .where((tag) => tag.isNotEmpty)
+            .toList();
+      }
+
+      // Upload images if any
+      List<String> imageUrls = [];
+      if (_selectedImages.isNotEmpty) {
+        imageUrls = await _memoryController.uploadImages(_selectedImages);
+      }
+
+      // Create the memory
+      bool success = await _memoryController.createMemory(
         title: _titleController.text.trim(),
-        content: _contentController.text.trim(),
-        type: _selectedType,
-        imageFile: _selectedImage,
+        message: _contentController.text.trim(),
+        tags: tags,
+        dateTime: "2023-05-15T18:30:00.000Z",
+        images: imageUrls,
       );
 
-      // Clear form
-      _titleController.clear();
-      _contentController.clear();
-      setState(() {
-        _selectedImage = null;
-        _isLoading = false;
-      });
+      if (success) {
+        // Clear form
+        _titleController.clear();
+        _contentController.clear();
+        _tagsController.clear();
+        setState(() {
+          _selectedImages.clear();
+          _isLoading = false;
+        });
 
-      Get.snackbar(
-        'Success',
-        'Memory added successfully!',
-        backgroundColor: AppColors.primary,
-        colorText: Colors.white,
-      );
+        Get.snackbar(
+          'Success',
+          'Memory created successfully!',
+          backgroundColor: AppColors.primary,
+          colorText: Colors.white,
+        );
 
-      if (widget.onSubmit != null) {
-        widget.onSubmit!();
+        if (widget.onSubmit != null) {
+          widget.onSubmit!();
+        }
+      } else {
+        throw Exception('Failed to create memory');
       }
     } catch (e) {
       setState(() {
@@ -101,7 +121,7 @@ class _CreateMemoryFormState extends State<CreateMemoryForm> {
       });
       Get.snackbar(
         'Error',
-        'Failed to add memory: $e',
+        'Failed to create memory: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -151,84 +171,6 @@ class _CreateMemoryFormState extends State<CreateMemoryForm> {
               ),
             ],
           ),
-          
-          SizedBox(height: 16.h),
-
-          // Type Selection
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: ToggleButtons(
-              borderRadius: BorderRadius.circular(12.r),
-              isSelected: [_selectedType == 'note', _selectedType == 'photo'],
-              onPressed: (index) {
-                setState(() {
-                  _selectedType = index == 0 ? 'note' : 'photo';
-                });
-              },
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.note,
-                        size: 18.sp,
-                        color: _selectedType == 'note' 
-                            ? Colors.white 
-                            : AppColors.textSecondary,
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        'Note',
-                        style: TextStyle(
-                          color: _selectedType == 'note' 
-                              ? Colors.white 
-                              : AppColors.textSecondary,
-                          fontWeight: _selectedType == 'note' 
-                              ? FontWeight.bold 
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.photo_camera,
-                        size: 18.sp,
-                        color: _selectedType == 'photo' 
-                            ? Colors.white 
-                            : AppColors.textSecondary,
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        'Photo',
-                        style: TextStyle(
-                          color: _selectedType == 'photo' 
-                              ? Colors.white 
-                              : AppColors.textSecondary,
-                          fontWeight: _selectedType == 'photo' 
-                              ? FontWeight.bold 
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              selectedColor: Colors.white,
-              fillColor: AppColors.primary,
-              color: AppColors.textSecondary,
-            ),
-          ),
 
           SizedBox(height: 16.h),
 
@@ -255,7 +197,7 @@ class _CreateMemoryFormState extends State<CreateMemoryForm> {
 
           SizedBox(height: 16.h),
 
-          // Content Field
+          // Description Field
           TextField(
             controller: _contentController,
             maxLines: 4,
@@ -277,61 +219,132 @@ class _CreateMemoryFormState extends State<CreateMemoryForm> {
             ),
           ),
 
-          if (_selectedType == 'photo') ...[
-            SizedBox(height: 16.h),
+          SizedBox(height: 16.h),
 
-            // Image Picker
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: Colors.grey.shade300,
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    if (_selectedImage != null)
-                      ClipRRect(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
-                        child: Image.file(
-                          _selectedImage!,
-                          height: 150.h,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    Container(
-                      padding: EdgeInsets.all(16.w),
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_a_photo,
-                            color: AppColors.primary,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            _selectedImage != null 
-                                ? 'Change Photo' 
-                                : 'Select Photo',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+          // Tags Field
+          TextField(
+            controller: _tagsController,
+            decoration: InputDecoration(
+              labelText: 'Tags',
+              hintText: 'Enter tags separated by commas (e.g., vacation, love, special)',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide(color: AppColors.primary, width: 2),
               ),
             ),
-          ],
+          ),
+
+          SizedBox(height: 16.h),
+
+          // Image Picker
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Photos (Optional)',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              GestureDetector(
+                onTap: _pickImages,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: Colors.grey.shade300,
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      if (_selectedImages.isNotEmpty)
+                        SizedBox(
+                          height: 100.h,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _selectedImages.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: EdgeInsets.all(4.w),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.r),
+                                      child: Image.file(
+                                        _selectedImages[index],
+                                        width: 80.w,
+                                        height: 80.h,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 2.h,
+                                      right: 2.w,
+                                      child: GestureDetector(
+                                        onTap: () => _removeImage(index),
+                                        child: Container(
+                                          width: 20.w,
+                                          height: 20.h,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.close,
+                                            size: 12.sp,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      Container(
+                        padding: EdgeInsets.all(16.w),
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_a_photo,
+                              color: AppColors.primary,
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              _selectedImages.isEmpty
+                                  ? 'Add Photos'
+                                  : 'Add More Photos',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
 
           SizedBox(height: 24.h),
 
@@ -346,7 +359,7 @@ class _CreateMemoryFormState extends State<CreateMemoryForm> {
                 borderRadius: BorderRadius.circular(12.r),
               ),
             ),
-            child: _isLoading 
+            child: _isLoading
                 ? SizedBox(
                     width: 24.w,
                     height: 24.h,

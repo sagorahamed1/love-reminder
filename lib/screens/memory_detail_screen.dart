@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../controllers/memory_controller.dart';
 import '../models/memory.dart';
 import '../utils/app_colors.dart';
 import '../widgets/custom_text.dart';
@@ -13,7 +15,7 @@ class MemoryDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isOwnMemory = memory.createdBy == '1'; // Mock user ID
+    final bool isOwnMemory = memory.isSender == true; // From API response
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -26,7 +28,7 @@ class MemoryDetailScreen extends StatelessWidget {
                 gradient: AppColors.backgroundGradient,
               ),
             ),
-            
+
             // Content
             CustomScrollView(
               slivers: [
@@ -44,15 +46,16 @@ class MemoryDetailScreen extends StatelessWidget {
                   ),
                   actions: [
                     PopupMenuButton<String>(
-                      onSelected: (String result) {
+                      onSelected: (String result) async {
                         // Handle menu selection
                         if (result == 'share') {
                           // Implement sharing functionality
                         } else if (result == 'delete') {
-                          // Implement delete functionality
+                          await _confirmAndDeleteMemory(context);
                         }
                       },
-                      itemBuilder: (BuildContext context) => [
+                      itemBuilder: (BuildContext context) =>
+                      [
                         const PopupMenuItem<String>(
                           value: 'share',
                           child: Row(
@@ -69,49 +72,65 @@ class MemoryDetailScreen extends StatelessWidget {
                             children: [
                               Icon(Icons.delete, color: Colors.red),
                               SizedBox(width: 8),
-                              Text('Delete', style: TextStyle(color: Colors.red)),
+                              Text('Delete',
+                                  style: TextStyle(color: Colors.red)),
                             ],
                           ),
                         ),
                       ],
                     ),
                   ],
-                  expandedHeight: memory.type == 'photo' && memory.imageUrl != null ? 300.h : 200.h,
+                  expandedHeight: memory.images != null &&
+                      memory.images!.isNotEmpty ? 300.h : 200.h,
                   pinned: true,
                   flexibleSpace: FlexibleSpaceBar(
-                    background: memory.type == 'photo' && memory.imageUrl != null
-                        ? CachedNetworkImage(
-                            imageUrl: memory.imageUrl!,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: AppColors.primary.withOpacity(0.1),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.primary,
+                    background: memory.images != null &&
+                        memory.images!.isNotEmpty
+                        ? PageView.builder(
+                      itemCount: memory.images!.length,
+                      itemBuilder: (context, index) {
+                        String imageUrl = memory.images![index];
+                        // If the image URL is not a full URL, prepend the base URL
+                        if (!imageUrl.startsWith('http')) {
+                          imageUrl =
+                          'https://6c0hk6c2-8089.inc1.devtunnels.ms/upload/$imageUrl';
+                        }
+                        return CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              Container(
+                                color: AppColors.primary.withOpacity(0.1),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppColors.primary,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: AppColors.primary.withOpacity(0.1),
-                              child: Center(
-                                child: Icon(
-                                  Icons.broken_image,
-                                  color: AppColors.textSecondary,
-                                  size: 48.sp,
+                          errorWidget: (context, url, error) =>
+                              Container(
+                                color: AppColors.primary.withOpacity(0.1),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.broken_image,
+                                    color: AppColors.textSecondary,
+                                    size: 48.sp,
+                                  ),
                                 ),
                               ),
-                            ),
-                          )
+                        );
+                      },
+                    )
                         : Container(
-                            color: AppColors.primary.withOpacity(0.1),
-                            child: Icon(
-                              Icons.note,
-                              size: 48.sp,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
+                      color: AppColors.primary.withOpacity(0.1),
+                      child: Icon(
+                        Icons.note,
+                        size: 48.sp,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -147,9 +166,8 @@ class MemoryDetailScreen extends StatelessWidget {
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
-                                  memory.type == 'photo'
-                                      ? Icons.photo_camera
-                                      : Icons.note,
+                                  Icons.photo_library,
+                                  // Generic icon for memories
                                   size: 18.sp,
                                   color: Colors.white,
                                 ),
@@ -160,7 +178,7 @@ class MemoryDetailScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      memory.title,
+                                      memory.title ?? 'No Title',
                                       style: TextStyle(
                                         fontSize: 18.sp,
                                         fontWeight: FontWeight.w700,
@@ -176,26 +194,31 @@ class MemoryDetailScreen extends StatelessWidget {
                                         ),
                                         SizedBox(width: 4.w),
                                         Text(
-                                          DateFormat.yMMMd().format(memory.createdAt),
+                                          DateFormat.yMMMd().format(
+                                              memory.createdAt ??
+                                                  DateTime.now()),
                                           style: TextStyle(
                                             fontSize: 12.sp,
                                             color: AppColors.textLight,
                                           ),
                                         ),
                                         SizedBox(width: 12.w),
-                                        Icon(
-                                          Icons.access_time,
-                                          size: 12.sp,
-                                          color: AppColors.textLight,
-                                        ),
-                                        SizedBox(width: 4.w),
-                                        Text(
-                                          DateFormat('h:mm a').format(memory.createdAt),
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
+                                        if (memory.dateTime != null) ...[
+                                          Icon(
+                                            Icons.access_time,
+                                            size: 12.sp,
                                             color: AppColors.textLight,
                                           ),
-                                        ),
+                                          SizedBox(width: 4.w),
+                                          Text(
+                                            DateFormat('h:mm a').format(
+                                                memory.dateTime!),
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: AppColors.textLight,
+                                            ),
+                                          ),
+                                        ],
                                       ],
                                     ),
                                   ],
@@ -214,7 +237,8 @@ class MemoryDetailScreen extends StatelessWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
-                                      Icons.person,
+                                      isOwnMemory ? Icons.person : Icons
+                                          .favorite,
                                       size: 12.sp,
                                       color: AppColors.primary,
                                     ),
@@ -242,7 +266,8 @@ class MemoryDetailScreen extends StatelessWidget {
                               vertical: 6.h,
                             ),
                             decoration: BoxDecoration(
-                              color: memory.type == 'photo' 
+                              color: memory.images != null &&
+                                  memory.images!.isNotEmpty
                                   ? AppColors.primary.withOpacity(0.1)
                                   : Colors.orange.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12.r),
@@ -251,22 +276,28 @@ class MemoryDetailScreen extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  memory.type == 'photo' 
-                                      ? Icons.photo_camera 
+                                  memory.images != null &&
+                                      memory.images!.isNotEmpty
+                                      ? Icons.photo_library
                                       : Icons.note,
                                   size: 12.sp,
-                                  color: memory.type == 'photo' 
-                                      ? AppColors.primary 
+                                  color: memory.images != null &&
+                                      memory.images!.isNotEmpty
+                                      ? AppColors.primary
                                       : Colors.orange,
                                 ),
                                 SizedBox(width: 4.w),
                                 Text(
-                                  memory.type == 'photo' ? 'Photo Memory' : 'Note Memory',
+                                  memory.images != null &&
+                                      memory.images!.isNotEmpty
+                                      ? 'Photo Memory'
+                                      : 'Note Memory',
                                   style: TextStyle(
                                     fontSize: 12.sp,
                                     fontWeight: FontWeight.w500,
-                                    color: memory.type == 'photo' 
-                                        ? AppColors.primary 
+                                    color: memory.images != null &&
+                                        memory.images!.isNotEmpty
+                                        ? AppColors.primary
                                         : Colors.orange,
                                   ),
                                 ),
@@ -278,14 +309,15 @@ class MemoryDetailScreen extends StatelessWidget {
 
                           // Memory content
                           CustomText(
-                            text: memory.content,
+                            text: memory.message ?? '',
                             fontSize: 16,
                             color: AppColors.textPrimary,
                             textAlign: TextAlign.left,
                             fontWeight: FontWeight.w400,
                           ),
 
-                          if (memory.tags.isNotEmpty) ...[
+                          if (memory.tags != null &&
+                              memory.tags!.isNotEmpty) ...[
                             SizedBox(height: 24.h),
 
                             // Tags section
@@ -299,7 +331,7 @@ class MemoryDetailScreen extends StatelessWidget {
                             Wrap(
                               spacing: 8.w,
                               runSpacing: 8.h,
-                              children: memory.tags.map((tag) {
+                              children: memory.tags!.map((tag) {
                                 return Container(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 12.w,
@@ -324,21 +356,41 @@ class MemoryDetailScreen extends StatelessWidget {
 
                           SizedBox(height: 32.h),
 
-                          // Heart icon
-                          Center(
-                            child: Container(
-                              width: 64.w,
-                              height: 64.w,
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
-                                shape: BoxShape.circle,
+                          // Favorite indicator
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 64.w,
+                                height: 64.w,
+                                decoration: BoxDecoration(
+                                  color: memory.isFavorited == true
+                                      ? Colors.red.withOpacity(0.1)
+                                      : AppColors.primary.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.favorite,
+                                  color: memory.isFavorited == true
+                                      ? Colors.red
+                                      : AppColors.primary,
+                                  size: 32.sp,
+                                ),
                               ),
-                              child: Icon(
-                                Icons.favorite,
-                                color: AppColors.primary,
-                                size: 32.sp,
+                              SizedBox(width: 12.w),
+                              Text(
+                                memory.isFavorited == true
+                                    ? 'Favorited'
+                                    : 'Memory Saved',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: memory.isFavorited == true
+                                      ? Colors.red
+                                      : AppColors.textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ],
                       ),
@@ -351,5 +403,109 @@ class MemoryDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Confirm and delete memory
+  Future<void> _confirmAndDeleteMemory(BuildContext context) async {
+    final result = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Memory'),
+          content: const Text(
+              'Are you sure you want to delete this memory? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Cancel
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Confirm
+              },
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      // User confirmed deletion
+      await _deleteMemory(context);
+    }
+  }
+
+  // Delete memory from the API
+  Future<void> _deleteMemory(BuildContext context) async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text('Deleting memory...'),
+              ],
+            ),
+          );
+        },
+      );
+
+      // Call the memory controller to delete the memory
+      final memoryController = Get.find<MemoryController>();
+      bool success = await memoryController.deleteMemory(memory.id!);
+
+      // Close the loading dialog
+      Navigator.of(context).pop();
+
+      if (success) {
+        // Show success message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Memory deleted successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+
+        // Navigate back to the previous screen
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close detail screen
+        }
+      } else {
+        // Show error message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to delete memory'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Close the loading dialog if still open
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      // Show error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

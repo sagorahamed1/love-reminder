@@ -15,88 +15,112 @@ class MemoryScreen extends StatefulWidget {
 }
 
 class _MemoryScreenState extends State<MemoryScreen> {
+  final memoryController = Get.find<MemoryController>();
   String _selectedFilter = 'all';
 
   @override
+  void initState() {
+    memoryController.getMemories();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GetBuilder<MemoryController>(
-      builder: (memoryController) {
-        final memories = memoryController.memories;
-        List filteredMemories;
-        if (_selectedFilter == 'photos') {
-          filteredMemories = memories.where((m) => m.type == 'photo').toList();
-        } else if (_selectedFilter == 'notes') {
-          filteredMemories = memories.where((m) => m.type == 'note').toList();
-        } else {
-          filteredMemories = memories;
-        }
-
-        return Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              CustomText(
-                text: 'Our Memories',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-                textAlign: TextAlign.left,
-              ),
-
-              CustomText(
-                text: 'Precious moments we share together',
-
-                color: AppColors.textSecondary,
-                textAlign: TextAlign.left,
-              ),
-              SizedBox(height: 10.h),
-
-              // Filter Chips
-              FilterChips(
-                filters: const [
-                  {'key': 'all', 'label': 'All', 'icon': Icons.favorite},
-                  {
-                    'key': 'photos',
-                    'label': 'Photos',
-                    'icon': Icons.photo_camera,
-                  },
-                  {'key': 'notes', 'label': 'Notes', 'icon': Icons.note},
-                ],
-                selectedFilter: _selectedFilter,
-                onFilterChanged: (filter) {
-                  setState(() {
-                    _selectedFilter = filter;
-                  });
-                },
-              ),
-              SizedBox(height: 10.h),
-
-              // Memories List
-              Expanded(
-                child: filteredMemories.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        physics:
-                            const ClampingScrollPhysics(), // Better scroll physics
-                        padding: EdgeInsets.zero,
-                        itemCount: filteredMemories.length,
-                        itemBuilder: (context, index) {
-                          final memory = filteredMemories[index];
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 16.h),
-                            child: MemoryCard(memory: memory),
-                          );
-                        },
-                      ),
-              ),
-
-              SizedBox(height: 55.h),
-            ],
+    return Padding(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          CustomText(
+            text: 'Our Memories',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+            textAlign: TextAlign.left,
           ),
-        );
-      },
+
+          CustomText(
+            text: 'Precious moments we share together',
+
+            color: AppColors.textSecondary,
+            textAlign: TextAlign.left,
+          ),
+          SizedBox(height: 10.h),
+
+          // Filter Chips
+          FilterChips(
+            filters: const [
+              {'key': 'all', 'label': 'All', 'icon': Icons.favorite},
+              {
+                'key': 'photos',
+                'label': 'Photos',
+                'icon': Icons.photo_camera,
+              },
+              {'key': 'notes', 'label': 'Notes', 'icon': Icons.note},
+            ],
+            selectedFilter: _selectedFilter,
+            onFilterChanged: (filter) {
+              setState(() {
+                _selectedFilter = filter;
+              });
+            },
+          ),
+          SizedBox(height: 10.h),
+
+          // Memories List
+          Expanded(
+            child: Obx(() {
+
+              final allMemories = memoryController.memories;
+
+              // Filter memories based on selected filter
+              List filteredMemories;
+              if (_selectedFilter == 'photos') {
+                filteredMemories = allMemories.where((m) => m.images != null && m.images!.isNotEmpty).toList();
+              } else if (_selectedFilter == 'notes') {
+                filteredMemories = allMemories.where((m) => (m.images == null || m.images!.isEmpty) && m.message != null && m.message!.isNotEmpty).toList();
+              } else {
+                filteredMemories = allMemories;
+              }
+
+              if (memoryController.isLoading.value && filteredMemories.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (filteredMemories.isEmpty) {
+                return _buildEmptyState();
+              }
+
+              return NotificationListener<ScrollEndNotification>(
+                onNotification: (ScrollEndNotification notification) {
+                  if (notification.metrics.extentAfter == 0) {
+                    // User has scrolled to the end, load more
+                    if (memoryController.currentPage.value < memoryController.totalPages) {
+                      memoryController.loadMore();
+                    }
+                  }
+                  return false;
+                },
+                child: ListView.builder(
+                  physics: const ClampingScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  itemCount: filteredMemories.length,
+                  itemBuilder: (context, index) {
+                    final memory = filteredMemories[index];
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 16.h),
+                      child: MemoryCard(memory: memory),
+                    );
+                  },
+                ),
+              );
+            }),
+          ),
+
+          SizedBox(height: 55.h),
+        ],
+      ),
     );
   }
 
