@@ -154,4 +154,46 @@ class MemoryController extends GetxController {
       return false;
     }
   }
+
+  // Toggle favorite status for a memory
+  Future<bool> toggleFavorite(String memoryId, bool isCurrentlyFavorited) async {
+    try {
+      String endpoint = isCurrentlyFavorited
+          ? '/memory/$memoryId/unfavorite'
+          : '/memory/$memoryId/favorite';
+
+      var response = await ApiClient.postData(endpoint, jsonEncode({}));
+
+      if (response.statusCode == 200) {
+        // Update the favorite status in the local list
+        final index = memories.indexWhere((memory) => memory.id == memoryId);
+        if (index != -1) {
+          memories[index] = Memory(
+            id: memories[index].id,
+            senderId: memories[index].senderId,
+            receiverId: memories[index].receiverId,
+            title: memories[index].title,
+            message: memories[index].message,
+            tags: memories[index].tags,
+            dateTime: memories[index].dateTime,
+            images: memories[index].images,
+            createdAt: memories[index].createdAt,
+            updatedAt: memories[index].updatedAt,
+            favBy: memories[index].favBy,
+            isSender: memories[index].isSender,
+            isFavorited: !isCurrentlyFavorited, // Toggle the status
+            sender: memories[index].sender,
+            receiver: memories[index].receiver,
+          );
+          update();
+        }
+        return true;
+      } else {
+        throw Exception('Failed to toggle favorite: ${response.statusText}');
+      }
+    } catch (e) {
+      print('Error toggling favorite: $e');
+      return false;
+    }
+  }
 }

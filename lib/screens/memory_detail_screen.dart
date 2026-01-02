@@ -356,13 +356,12 @@ class MemoryDetailScreen extends StatelessWidget {
 
                           SizedBox(height: 32.h),
 
-                          // Favorite indicator
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 64.w,
-                                height: 64.w,
+                          // Favorite button
+                          Center(
+                            child: GestureDetector(
+                              onTap: () => _toggleFavorite(context),
+                              child: Container(
+                                padding: EdgeInsets.all(16.w),
                                 decoration: BoxDecoration(
                                   color: memory.isFavorited == true
                                       ? Colors.red.withOpacity(0.1)
@@ -371,26 +370,22 @@ class MemoryDetailScreen extends StatelessWidget {
                                 ),
                                 child: Icon(
                                   Icons.favorite,
-                                  color: memory.isFavorited == true
-                                      ? Colors.red
-                                      : AppColors.primary,
+                                  color: memory.isFavorited == true ? Colors.red : AppColors.textSecondary,
                                   size: 32.sp,
                                 ),
                               ),
-                              SizedBox(width: 12.w),
-                              Text(
-                                memory.isFavorited == true
-                                    ? 'Favorited'
-                                    : 'Memory Saved',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  color: memory.isFavorited == true
-                                      ? Colors.red
-                                      : AppColors.textSecondary,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          Center(
+                            child: Text(
+                              memory.isFavorited == true ? 'Favorited' : 'Tap to Favorite',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: memory.isFavorited == true ? Colors.red : AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
                               ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
@@ -486,6 +481,74 @@ class MemoryDetailScreen extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Failed to delete memory'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Close the loading dialog if still open
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      // Show error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  // Toggle favorite status for the memory
+  Future<void> _toggleFavorite(BuildContext context) async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text('Updating favorite status...'),
+              ],
+            ),
+          );
+        },
+      );
+
+      // Call the memory controller to toggle favorite
+      final memoryController = Get.find<MemoryController>();
+      bool success = await memoryController.toggleFavorite(memory.id!, memory.isFavorited ?? false);
+
+      // Close the loading dialog
+      Navigator.of(context).pop();
+
+      if (success) {
+        // Show success message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                memory.isFavorited == true ? 'Removed from favorites' : 'Added to favorites',
+              ),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        // Show error message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to update favorite status'),
               backgroundColor: Colors.red,
             ),
           );
