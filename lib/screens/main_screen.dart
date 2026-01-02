@@ -81,7 +81,15 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                     child: Column(
                       children: [
-                        const CustomAppBar(title: "Love Reminder"),
+                        CustomAppBar(
+                          title: _currentIndex == 0
+                              ? "Love Reminder"
+                              : _currentIndex == 1
+                              ? "Love Memories"
+                              : _currentIndex == 2
+                              ? "Mood Tracker"
+                              : "Settings",
+                        ),
                         Expanded(child: _screens[_currentIndex]),
                       ],
                     ),

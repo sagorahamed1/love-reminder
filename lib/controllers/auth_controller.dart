@@ -225,7 +225,8 @@ class AuthController extends GetxController {
   handleLogIn() async {
     logInLoading.value = true;
     var headers = {'Content-Type': 'application/json'};
-    var body = {"email": "temp1.mamun@gmail.com", "password": "1qazxsw2"};
+    // var body = {"email": "temp1.mamun@gmail.com", "password": "1qazxsw2"};
+    var body = {"email": "user@gmail.com", "password": "1qazxsw2"};
     var response = await ApiClient.postData(
       ApiConstants.signInEndPoint,
       jsonEncode(body),
@@ -238,7 +239,7 @@ class AuthController extends GetxController {
         AppConstants.bearerToken,
         response.body["data"]['tokens']["accessToken"],
       );
-      PrefsHelper.setString(AppConstants.email, "sagor@gmail.com");
+      PrefsHelper.setString(AppConstants.email, "user@gmail.com");
       PrefsHelper.setString(AppConstants.name, data["user"]['name']);
       PrefsHelper.setString(AppConstants.image, data["user"]['profileImage']);
       PrefsHelper.setString(AppConstants.userId, data["user"]['_id']);

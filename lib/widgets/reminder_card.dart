@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:lovereminder/models/getreminder_model.dart';
-import '../models/reminder.dart';
 import '../utils/app_colors.dart';
 
 class ReminderCard extends StatelessWidget {
@@ -20,12 +19,12 @@ class ReminderCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: reminder.completed
+        color: reminder.completed == true
             ? AppColors.success.withOpacity(0.1)
             : Colors.white,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: reminder.completed
+          color: reminder.completed == true
               ? AppColors.success.withOpacity(0.3)
               : Colors.grey.shade200,
         ),
@@ -48,16 +47,16 @@ class ReminderCard extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: reminder.completed
+                  color: reminder.completed == true
                       ? AppColors.success
                       : Colors.grey.shade400,
                   width: 2.w,
                 ),
-                color: reminder.completed
+                color: reminder.completed == true
                     ? AppColors.success
                     : Colors.transparent,
               ),
-              child: reminder.completed
+              child: reminder.completed == true
                   ? Icon(Icons.check, size: 16.sp, color: Colors.white)
                   : null,
             ),
@@ -74,14 +73,14 @@ class ReminderCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        reminder.title,
+                        reminder.title ?? 'No Title',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          color: reminder.completed
+                          color: reminder.completed == true
                               ? AppColors.success
                               : AppColors.textPrimary,
-                          decoration: reminder.completed
+                          decoration: reminder.completed == true
                               ? TextDecoration.lineThrough
                               : null,
                         ),
@@ -96,7 +95,7 @@ class ReminderCard extends StatelessWidget {
                         ),
                         SizedBox(width: 4.w),
                         Text(
-                          _formatTime(reminder.time),
+                          _formatTime(reminder.time ?? ''),
                           style: TextStyle(
                             fontSize: 12.sp,
                             color: AppColors.textLight,
@@ -115,7 +114,7 @@ class ReminderCard extends StatelessWidget {
                       reminder.message!,
                       style: TextStyle(
                         fontSize: 14.sp,
-                        color: reminder.completed
+                        color: reminder.completed == true
                             ? AppColors.success
                             : AppColors.textSecondary,
                       ),
@@ -124,56 +123,29 @@ class ReminderCard extends StatelessWidget {
 
                 SizedBox(height: 8.h),
 
-                // Bottom Row
+                // Bottom Row - Using API data where available, defaults otherwise
                 Row(
                   children: [
-                    // Attachments and Emoji
-                    Row(
-                      children: [
-                        if (reminder.hasPhoto)
-                          Container(
-                            width: 24.w,
-                            height: 24.w,
-                            decoration: BoxDecoration(
-                              color: AppColors.info.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.photo,
-                              size: 12.sp,
-                              color: AppColors.info,
-                            ),
-                          ),
-                        if (reminder.hasPhoto && reminder.hasVoice)
-                          SizedBox(width: 4.w),
-                        if (reminder.hasVoice)
-                          Container(
-                            width: 24.w,
-                            height: 24.w,
-                            decoration: BoxDecoration(
-                              color: Colors.purple.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.mic,
-                              size: 12.sp,
-                              color: Colors.purple,
-                            ),
-                          ),
-                        if ((reminder.hasPhoto || reminder.hasVoice) &&
-                            reminder.emoji != null)
-                          SizedBox(width: 8.w),
-                        if (reminder.emoji != null)
-                          Text(
+                    // Emoji
+                    if (reminder.emoji != null)
+                      Container(
+                        width: 24.w,
+                        height: 24.w,
+                        decoration: BoxDecoration(
+                          color: AppColors.info.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
                             reminder.emoji!,
-                            style: TextStyle(fontSize: 18.sp),
+                            style: TextStyle(fontSize: 12.sp),
                           ),
-                      ],
-                    ),
+                        ),
+                      ),
 
                     const Spacer(),
 
-                    // From Partner
+                    // From Partner/You indicator based on isOwn
                     Row(
                       children: [
                         Icon(
@@ -183,7 +155,7 @@ class ReminderCard extends StatelessWidget {
                         ),
                         SizedBox(width: 4.w),
                         Text(
-                          reminder.fromPartner ? 'From Partner' : 'From You',
+                          reminder.isOwn == true ? 'From You' : 'From Partner',
                           style: TextStyle(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
@@ -195,8 +167,8 @@ class ReminderCard extends StatelessWidget {
                   ],
                 ),
 
-                // Streak
-                if (reminder.streak > 0)
+                // Repeat indicator
+                if (reminder.repeat != null)
                   Padding(
                     padding: EdgeInsets.only(top: 8.h),
                     child: Container(
@@ -205,24 +177,24 @@ class ReminderCard extends StatelessWidget {
                         vertical: 4.h,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
+                        color: Colors.blue.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.local_fire_department,
+                            _getRepeatIcon(reminder.repeat!),
                             size: 12.sp,
-                            color: Colors.orange,
+                            color: Colors.blue,
                           ),
                           SizedBox(width: 4.w),
                           Text(
-                            '${reminder.streak} day streak',
+                            _formatRepeat(reminder.repeat!),
                             style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w500,
-                              color: Colors.orange,
+                              color: Colors.blue,
                             ),
                           ),
                         ],
@@ -239,7 +211,9 @@ class ReminderCard extends StatelessWidget {
 
   String _formatTime(String time) {
     try {
+      if (time.isEmpty) return '';
       final timeParts = time.split(':');
+      if (timeParts.length < 2) return time;
       final hour = int.parse(timeParts[0]);
       final minute = int.parse(timeParts[1]);
 
@@ -247,6 +221,36 @@ class ReminderCard extends StatelessWidget {
       return DateFormat.jm().format(dateTime);
     } catch (e) {
       return time;
+    }
+  }
+
+  IconData _getRepeatIcon(String repeat) {
+    switch (repeat.toLowerCase()) {
+      case 'daily':
+      case 'everyday':
+        return Icons.repeat;
+      case 'weekly':
+        return Icons.repeat_one;
+      case 'monthly':
+        return Icons.calendar_month;
+      case 'once':
+      default:
+        return Icons.event;
+    }
+  }
+
+  String _formatRepeat(String repeat) {
+    switch (repeat.toLowerCase()) {
+      case 'daily':
+        return 'Daily';
+      case 'weekly':
+        return 'Weekly';
+      case 'monthly':
+        return 'Monthly';
+      case 'once':
+        return 'One-time';
+      default:
+        return repeat;
     }
   }
 }

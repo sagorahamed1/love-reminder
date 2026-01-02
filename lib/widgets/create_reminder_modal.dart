@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controllers/reminder_controller.dart';
-import '../providers/reminder_provider.dart';
-import '../models/reminder.dart';
 import '../utils/app_colors.dart';
 
 class CreateReminderModal extends StatefulWidget {
@@ -22,6 +19,7 @@ class _CreateReminderModalState extends State<CreateReminderModal> {
   final _titleController = TextEditingController();
   final _messageController = TextEditingController();
   TimeOfDay _selectedTime = TimeOfDay.now();
+  DateTime _selectedDate = DateTime.now();
   String _selectedEmoji = '';
   List<String> _selectedDays = ['daily'];
   bool _isLoading = false;
@@ -252,6 +250,48 @@ class _CreateReminderModalState extends State<CreateReminderModal> {
                             ),
                           );
                         }).toList(),
+                      ),
+                      SizedBox(height: 12.h),
+
+                      // Date Picker
+                      GestureDetector(
+                        onTap: () async {
+                          final date = await showDatePicker(
+                            context: context,
+                            initialDate: _selectedDate,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                          );
+                          if (date != null) {
+                            setState(() {
+                              _selectedDate = date;
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.calendar_today,
+                                color: AppColors.textLight,
+                                size: 16,
+                              ),
+                              SizedBox(width: 12.w),
+                              Text(
+                                '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       SizedBox(height: 12.h),
 
@@ -522,30 +562,27 @@ class _CreateReminderModalState extends State<CreateReminderModal> {
     });
 
     try {
-      // final reminder = Reminder(
-      //   id: DateTime.now().millisecondsSinceEpoch.toString(),
-      //   title: _titleController.text,
-      //   message: _messageController.text.isEmpty
-      //       ? null
-      //       : _messageController.text,
-      //   time: _formatTimeOfDay(_selectedTime),
-      //   days: _selectedDays,
-      //   emoji: _selectedEmoji.isEmpty ? null : _selectedEmoji,
-      //   fromUserId: '1', // Mock user ID
-      //   toUserId: '2', // Mock partner ID
-      //   createdAt: DateTime.now(),
-      // );
-      //
-      var reminderMessage = {
-          "name": "${_titleController.text}",
-          "body": "${_messageController.text}",
-          "dateTime": "2025-12-20T16:00:00.000Z"
-      };
+      final success = await reminderController.createReminder(
+        title: _titleController.text,
+        message: _messageController.text,
+        repeat: _selectedDays.first, // Using the first selected day as repeat
+        date: _selectedDate.toIso8601String(), // Using selected date
+        time: _formatTimeOfDay(_selectedTime),
+        emoji: _selectedEmoji,
+      );
 
-
-      reminderController.createReminder(body: reminderMessage);
-
-      widget.onClose();
+      if (success) {
+        widget.onClose();
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Reminder created successfully!'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      } else {
+        throw Exception('Failed to create reminder');
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

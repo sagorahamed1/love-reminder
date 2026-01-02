@@ -1,15 +1,24 @@
+// To parse this JSON data, do
+//
+//     final getReminderModel = getReminderModelFromJson(jsonString);
 
+import 'dart:convert';
 
+GetReminderModel getReminderModelFromJson(String str) => GetReminderModel.fromJson(json.decode(str));
 
+String getReminderModelToJson(GetReminderModel data) => json.encode(data.toJson());
 
 class GetReminderModel {
   final String? id;
   final String? senderId;
   final String? receiverId;
-  final String? name;
-  final String? body;
-  final DateTime? dateTime;
-  final String? status;
+  final String? title;
+  final String? message;
+  final String? repeat;
+  final DateTime? date;
+  final String? time;
+  final String? emoji;
+  final bool? completed; // Add completed property for UI
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int? v;
@@ -22,10 +31,13 @@ class GetReminderModel {
     this.id,
     this.senderId,
     this.receiverId,
-    this.name,
-    this.body,
-    this.dateTime,
-    this.status,
+    this.title,
+    this.message,
+    this.repeat,
+    this.date,
+    this.time,
+    this.emoji,
+    this.completed,
     this.createdAt,
     this.updatedAt,
     this.v,
@@ -39,10 +51,13 @@ class GetReminderModel {
     id: json["_id"],
     senderId: json["senderId"],
     receiverId: json["receiverId"],
-    name: json["name"],
-    body: json["body"],
-    dateTime: json["dateTime"] == null ? null : DateTime.parse(json["dateTime"]),
-    status: json["status"],
+    title: json["title"],
+    message: json["message"],
+    repeat: json["repeat"],
+    date: json["date"] == null ? null : DateTime.parse(json["date"]),
+    time: json["time"],
+    emoji: json["emoji"],
+    completed: json["completed"], // Add completed from API response
     createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
     updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
     v: json["__v"],
@@ -56,10 +71,13 @@ class GetReminderModel {
     "_id": id,
     "senderId": senderId,
     "receiverId": receiverId,
-    "name": name,
-    "body": body,
-    "dateTime": dateTime?.toIso8601String(),
-    "status": status,
+    "title": title,
+    "message": message,
+    "repeat": repeat,
+    "date": date?.toIso8601String(),
+    "time": time,
+    "emoji": emoji,
+    "completed": completed,
     "createdAt": createdAt?.toIso8601String(),
     "updatedAt": updatedAt?.toIso8601String(),
     "__v": v,
