@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controllers/auth_controller.dart';
+import '../screens/partner_connect_screen.dart';
 import '../controllers/couple_controller.dart';
 import '../controllers/theme_controller.dart';
 import '../utils/app_colors.dart';
-import '../widgets/connection_code_card.dart';
 import '../widgets/settings_section.dart';
 import '../widgets/theme_selector.dart';
 import '../widgets/custom_text.dart';
@@ -57,15 +57,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               const BouncingScrollPhysics(), // Better scroll physics
                           child: Column(
                             children: [
-                              ConnectionCodeCard(
-                                connectionCode:
-                                    coupleController.connectionCode.value,
-                                onGenerateNew: () {
-                                  coupleController.generateNewCode();
-                                },
-                              ),
-
-                              SizedBox(height: 10.h),
 
                               // Profile Section
                               SettingsSection(
@@ -89,7 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ? 'Connected to ${coupleController.partner.value!.name}'
                                         : 'Not connected',
                                     onTap: () {
-                                      // Handle connection management
+                                      Get.toNamed('/partner-connect');
                                     },
                                   ),
                                 ],

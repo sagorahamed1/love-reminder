@@ -14,6 +14,7 @@ import 'controllers/theme_controller.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
+import 'screens/partner_connect_screen.dart';
 import 'screens/splash_screen.dart';
 import 'utils/app_colors.dart';
 
@@ -76,6 +77,7 @@ class MyLoveReminderApp extends StatelessWidget {
             GetPage(name: '/login', page: () => const LoginScreen()),
             GetPage(name: '/onboarding', page: () => const OnboardingScreen()),
             GetPage(name: '/main', page: () => const MainScreen()),
+            GetPage(name: '/partner-connect', page: () => const PartnerConnectScreen()),
           ],
           home: child,
         );
