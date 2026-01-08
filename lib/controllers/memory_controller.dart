@@ -6,6 +6,8 @@ import '../services/api_client.dart';
 import '../services/api_constants.dart';
 
 class MemoryController extends GetxController {
+
+
   @override
   void onInit() {
     super.onInit();
@@ -64,6 +66,9 @@ class MemoryController extends GetxController {
       update();
     }
   }
+
+
+
 
   RxBool isCreating = false.obs;
 

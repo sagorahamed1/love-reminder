@@ -5,7 +5,7 @@ import '../models/mood.dart';
 import '../utils/app_colors.dart';
 
 class MoodHistory extends StatelessWidget {
-  final List<Mood> history;
+  final List<MoodModel> history;
 
   const MoodHistory({super.key, required this.history});
 
@@ -46,7 +46,7 @@ class MoodHistory extends StatelessWidget {
               separatorBuilder: (context, index) => SizedBox(height: 8.h),
               itemBuilder: (context, index) {
                 final mood = history[index];
-                final isOwnMood = mood.userId == '1'; // Mock user ID
+                final isOwnMood = mood.isSender ?? false;
 
                 return Container(
                   padding: EdgeInsets.all(8.r),
@@ -108,7 +108,7 @@ class MoodHistory extends StatelessWidget {
                                       ),
                                       SizedBox(width: 2.w),
                                       Text(
-                                        isOwnMood ? 'You' : 'Partner',
+                                        isOwnMood ? 'You' : mood.getPartnerName(),
                                         style: TextStyle(
                                           fontSize: 10.sp,
                                           fontWeight: FontWeight.w500,
@@ -120,7 +120,7 @@ class MoodHistory extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            if (mood.note != null)
+                            if (mood.note != null && mood.note!.isNotEmpty)
                               Padding(
                                 padding: EdgeInsets.only(top: 4.h),
                                 child: Text(
@@ -129,6 +129,8 @@ class MoodHistory extends StatelessWidget {
                                     fontSize: 12.sp,
                                     color: AppColors.textSecondary,
                                   ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                           ],
@@ -202,7 +204,7 @@ class MoodHistory extends StatelessWidget {
   }
 
   String _getMoodEmoji(String mood) {
-    switch (mood) {
+    switch (mood.toLowerCase()) {
       case 'happy':
         return '😊';
       case 'love':
@@ -221,7 +223,7 @@ class MoodHistory extends StatelessWidget {
   }
 
   Color _getMoodColor(String mood) {
-    switch (mood) {
+    switch (mood.toLowerCase()) {
       case 'happy':
         return Colors.yellow.shade700;
       case 'love':

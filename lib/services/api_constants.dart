@@ -32,6 +32,7 @@ class ApiConstants{
 
 
   static const String signInEndPoint = "/auth/login";
+  static const String mood = "/mood";
   static String getReminder(String? page) => "/reminder?limit=5&page=${page ?? "1"}";
 
 

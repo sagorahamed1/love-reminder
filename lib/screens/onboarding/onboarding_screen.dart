@@ -114,7 +114,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
     await SharedPrefsService.setOnboardingComplete(true);
 
     // Navigate to main screen
-    Get.offAllNamed('/main');
+
+    Get.toNamed('/partner-connect');
   }
 
   @override
