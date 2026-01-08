@@ -28,15 +28,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -50,19 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB_uSJt9bvvJ0285G24FuNT3phd7NLrfHI',
-    appId: '1:350667225665:android:f17966370bc0d86dace4c0',
-    messagingSenderId: '350667225665',
-    projectId: 'sagorahamed-1a479',
-    storageBucket: 'sagorahamed-1a479.firebasestorage.app',
+    apiKey: 'AIzaSyD0efqPheI9uPr2VbItjCbe_FB-VVMMxqI',
+    appId: '1:52118588252:android:d766a401976605ebe10f99',
+    messagingSenderId: '52118588252',
+    projectId: 'love-reminder-e24c4',
+    storageBucket: 'love-reminder-e24c4.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCmWH3C0dSrutf60tcYgi_TWJ3V4vDHj6Q',
-    appId: '1:350667225665:ios:b5b764786a5b133aace4c0',
-    messagingSenderId: '350667225665',
-    projectId: 'sagorahamed-1a479',
-    storageBucket: 'sagorahamed-1a479.firebasestorage.app',
+    apiKey: 'AIzaSyBwIYFWAKyJxfLBOqac511RTVbHO8M8iA8',
+    appId: '1:52118588252:ios:dfd2190ad716137ce10f99',
+    messagingSenderId: '52118588252',
+    projectId: 'love-reminder-e24c4',
+    storageBucket: 'love-reminder-e24c4.firebasestorage.app',
     iosBundleId: 'com.example.lovereminder',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBwIYFWAKyJxfLBOqac511RTVbHO8M8iA8',
+    appId: '1:52118588252:ios:dfd2190ad716137ce10f99',
+    messagingSenderId: '52118588252',
+    projectId: 'love-reminder-e24c4',
+    storageBucket: 'love-reminder-e24c4.firebasestorage.app',
+    iosBundleId: 'com.example.lovereminder',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyA8C8AE7plrspq8XQILUoseFKCrCcFHTv8',
+    appId: '1:52118588252:web:816b848f19dca7d9e10f99',
+    messagingSenderId: '52118588252',
+    projectId: 'love-reminder-e24c4',
+    authDomain: 'love-reminder-e24c4.firebaseapp.com',
+    storageBucket: 'love-reminder-e24c4.firebasestorage.app',
+    measurementId: 'G-K7FX7RSXHY',
   );
 }

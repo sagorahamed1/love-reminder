@@ -20,21 +20,21 @@ class MoodScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              CustomText(
-                text: 'Mood Sharing',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-                textAlign: TextAlign.left,
-              ),
-
-              CustomText(
-                text: 'Share your feelings with your loved one',
-
-                color: AppColors.textSecondary,
-                textAlign: TextAlign.left,
-              ),
-              SizedBox(height: 10.h),
+              // CustomText(
+              //   text: 'Mood Sharing',
+              //   fontSize: 22,
+              //   fontWeight: FontWeight.bold,
+              //   color: AppColors.textPrimary,
+              //   textAlign: TextAlign.left,
+              // ),
+              //
+              // CustomText(
+              //   text: 'Share your feelings with your loved one',
+              //
+              //   color: AppColors.textSecondary,
+              //   textAlign: TextAlign.left,
+              // ),
+              // SizedBox(height: 10.h),
 
               Expanded(
                 child: SingleChildScrollView(

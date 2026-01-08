@@ -122,14 +122,21 @@ class _MainScreenState extends State<MainScreen> {
                   ],
                 ),
               ),
-        bottomNavigationBar: CustomBottomNavigation(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
+        
+        
+        bottomNavigationBar: SafeArea(
+          child: CustomBottomNavigation(
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+          ),
         ),
+        
+        
+        
         floatingActionButton:
             _currentIndex <
                 2 // Show FAB only on Reminders and Memory screens

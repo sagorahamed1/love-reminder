@@ -38,7 +38,7 @@ class _MoodSelectorState extends State<MoodSelector> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
@@ -72,7 +72,7 @@ class _MoodSelectorState extends State<MoodSelector> {
               crossAxisCount: 3,
               crossAxisSpacing: 12.w,
               mainAxisSpacing: 12.h,
-              childAspectRatio: 1,
+              childAspectRatio: 1.5,
             ),
             itemCount: _moods.length,
             itemBuilder: (context, index) {
@@ -88,7 +88,7 @@ class _MoodSelectorState extends State<MoodSelector> {
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: EdgeInsets.all(12.w),
+                  padding: EdgeInsets.all(6.w),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? mood['color'].withOpacity(0.1)
@@ -102,7 +102,7 @@ class _MoodSelectorState extends State<MoodSelector> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(mood['emoji'], style: TextStyle(fontSize: 24.sp)),
+                      Text(mood['emoji'], style: TextStyle(fontSize: 20.sp)),
                       SizedBox(height: 4.h),
                       Text(
                         mood['label'],

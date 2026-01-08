@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "350667225665",
-    "project_id": "sagorahamed-1a479",
-    "storage_bucket": "sagorahamed-1a479.firebasestorage.app"
+    "project_number": "52118588252",
+    "project_id": "love-reminder-e24c4",
+    "storage_bucket": "love-reminder-e24c4.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:350667225665:android:f17966370bc0d86dace4c0",
+        "mobilesdk_app_id": "1:52118588252:android:d766a401976605ebe10f99",
         "android_client_info": {
           "package_name": "com.example.lovereminder"
         }
@@ -15,26 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB_uSJt9bvvJ0285G24FuNT3phd7NLrfHI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:350667225665:android:8585405ce03652e7ace4c0",
-        "android_client_info": {
-          "package_name": "com.example.portfolio"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB_uSJt9bvvJ0285G24FuNT3phd7NLrfHI"
+          "current_key": "AIzaSyD0efqPheI9uPr2VbItjCbe_FB-VVMMxqI"
         }
       ],
       "services": {

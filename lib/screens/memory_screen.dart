@@ -32,41 +32,41 @@ class _MemoryScreenState extends State<MemoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          CustomText(
-            text: 'Our Memories',
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-            textAlign: TextAlign.left,
-          ),
+          // CustomText(
+          //   text: 'Our Memories',
+          //   fontSize: 22,
+          //   fontWeight: FontWeight.bold,
+          //   color: AppColors.textPrimary,
+          //   textAlign: TextAlign.left,
+          // ),
+          //
+          // CustomText(
+          //   text: 'Precious moments we share together',
+          //
+          //   color: AppColors.textSecondary,
+          //   textAlign: TextAlign.left,
+          // ),
+          // SizedBox(height: 10.h),
 
-          CustomText(
-            text: 'Precious moments we share together',
-
-            color: AppColors.textSecondary,
-            textAlign: TextAlign.left,
-          ),
-          SizedBox(height: 10.h),
-
-          // Filter Chips
-          FilterChips(
-            filters: const [
-              {'key': 'all', 'label': 'All', 'icon': Icons.favorite},
-              {
-                'key': 'photos',
-                'label': 'Photos',
-                'icon': Icons.photo_camera,
-              },
-              {'key': 'notes', 'label': 'Notes', 'icon': Icons.note},
-            ],
-            selectedFilter: _selectedFilter,
-            onFilterChanged: (filter) {
-              setState(() {
-                _selectedFilter = filter;
-              });
-            },
-          ),
-          SizedBox(height: 10.h),
+          // // Filter Chips
+          // FilterChips(
+          //   filters: const [
+          //     {'key': 'all', 'label': 'All', 'icon': Icons.favorite},
+          //     {
+          //       'key': 'photos',
+          //       'label': 'Photos',
+          //       'icon': Icons.photo_camera,
+          //     },
+          //     {'key': 'notes', 'label': 'Notes', 'icon': Icons.note},
+          //   ],
+          //   selectedFilter: _selectedFilter,
+          //   onFilterChanged: (filter) {
+          //     setState(() {
+          //       _selectedFilter = filter;
+          //     });
+          //   },
+          // ),
+          // SizedBox(height: 10.h),
 
           // Memories List
           Expanded(
