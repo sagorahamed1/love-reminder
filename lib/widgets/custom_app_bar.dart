@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lovereminder/services/api_constants.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/couple_controller.dart';
 import '../utils/app_colors.dart';
@@ -55,10 +57,10 @@ class CustomAppBar extends StatelessWidget {
                           color: AppColors.textPrimary,
                           textAlign: TextAlign.left,
                         ),
-                        if (coupleController.partner.value != null)
+                        if (coupleController.partner.value != "")
                           CustomText(
                             text:
-                                'Connected with ${coupleController.partner.value!.name}',
+                                'Connected with ${coupleController.partner.value}',
                             fontSize: 12,
                             color: AppColors.textSecondary,
                             textAlign: TextAlign.left,
@@ -112,11 +114,34 @@ class CustomAppBar extends StatelessWidget {
                           color: AppColors.primaryLight,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          Icons.person,
-                          size: 16.sp,
-                          color: AppColors.primary,
-                        ),
+                        child: CachedNetworkImage(
+                          imageUrl: "${ApiConstants.imageBaseUrl}/${coupleController.profileImage.value}",
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+
+                          placeholder: (context, url) => Container(
+                            height: 32.h,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: AppColors.primaryGradient.scale(0.3),
+                            ),
+                            child: Center(
+                              child: Icon(Icons.photo, size: 18.sp, color: Colors.white),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            height: 32.h,
+                            width: 32.w,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: AppColors.primaryGradient.scale(0.3),
+                            ),
+                            child: Center(
+                              child: Icon(Icons.photo, size: 18.sp, color: Colors.white),
+                            ),
+                          ),
+                        )
                       ),
                     ],
                   ),

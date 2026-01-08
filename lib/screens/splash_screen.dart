@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lovereminder/helpers/prefs_helper.dart';
+import 'package:lovereminder/utils/app_constant.dart';
 import '../controllers/auth_controller.dart';
-import '../screens/auth/login_screen.dart';
-import '../screens/onboarding/onboarding_screen.dart';
 import '../services/shared_prefs_service.dart';
 import '../utils/app_colors.dart';
 import '../widgets/custom_text.dart';
-import 'main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -44,14 +43,11 @@ class _SplashScreenState extends State<SplashScreen>
     // Auto navigate based on auth and onboarding status after splash
     Future.delayed(const Duration(seconds: 3), () async {
       if (mounted) {
-        final authController = Get.find<AuthController>();
-        final isAuthenticated = authController.isAuthenticated;
+        final isAuthenticated = await PrefsHelper.getBool(AppConstants.isLogged);
         final hasCompletedOnboarding = await SharedPrefsService.isOnboardingComplete;
 
-        // Remove the mock login since we want real authentication
-        // Get.find<AuthController>().mockLogin();
 
-        if (!isAuthenticated) {
+        if (isAuthenticated) {
           // User not logged in, show login screen
           Get.offAllNamed('/login');
         } else if (!hasCompletedOnboarding) {

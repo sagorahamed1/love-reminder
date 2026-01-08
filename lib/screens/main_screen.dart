@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
     const RemindersScreen(),
     const MemoryScreen(),
     const MoodScreen(),
-    const SettingsScreen(),
+     ProfileSettingsScreen(),
   ];
 
   // Show appropriate modal based on current screen

@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../helpers/prefs_helper.dart';
 import '../models/user.dart';
 import '../services/api_client.dart';
 import '../services/api_constants.dart';
+import '../utils/app_constant.dart';
 
 class CoupleController extends GetxController {
   // Partner info
-  Rxn<User> partner = Rxn<User>();
+  RxString partner = "".obs;
+  RxString profileImage = "".obs;
 
   // Connection data
   var connectionCode = ''.obs;
@@ -23,34 +26,15 @@ class CoupleController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Load partner info when controller initializes
-    getPartnerInfo();
-    generateConnectionCode();
+    getLocalData();
   }
 
-  // Generate connection code for current user
-  Future<void> generateConnectionCode() async {
-    try {
-      isGeneratingCode(true);
-
-      var response = await ApiClient.getData('/user/generate-code');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.body['data'] != null &&
-            response.body['data']['code'] != null) {
-          connectionCode.value = response.body['data']['code'];
-        }
-      } else {
-        throw Exception(response.body['message'] ?? 'Failed to generate code');
-      }
-    } catch (e) {
-      print('Error generating connection code: $e');
-      // Generate a fallback code (you can customize this)
-      connectionCode.value = _generateFallbackCode();
-    } finally {
-      isGeneratingCode(false);
-    }
+  getLocalData()async{
+    connectionCode.value = await PrefsHelper.getString(AppConstants.inviteCode);
+    partner.value = await PrefsHelper.getString(AppConstants.partnerName);
+    profileImage.value = await PrefsHelper.getString(AppConstants.image);
   }
+
 
   // Fallback code generator
   String _generateFallbackCode() {
@@ -88,11 +72,6 @@ class CoupleController extends GetxController {
         // Connection successful
         isConnected(true);
 
-        // Get partner info
-        if (response.body['data'] != null &&
-            response.body['data']['partner'] != null) {
-          partner.value = User.fromJson(response.body['data']['partner']);
-        }
 
         // Update connection streak if available
         if (response.body['data'] != null &&
@@ -100,8 +79,6 @@ class CoupleController extends GetxController {
           connectionStreak.value = response.body['data']['connectionStreak'];
         }
 
-        // Refresh partner info
-        await getPartnerInfo();
 
         Get.snackbar(
           'Success',
@@ -193,7 +170,7 @@ class CoupleController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Disconnection successful
         isConnected(false);
-        partner.value = null;
+        partner.value = "";
         connectionStreak.value = 0;
 
         Get.snackbar(
@@ -227,47 +204,9 @@ class CoupleController extends GetxController {
     }
   }
 
-  // Get partner information
-  Future<void> getPartnerInfo() async {
-    try {
-      isLoadingPartnerInfo(true);
-
-      var response = await ApiClient.getData('/user/partner-info');
-
-      if (response.statusCode == 200) {
-        if (response.body['data'] != null) {
-          // Check if user is connected
-          isConnected.value = response.body['data']['isConnected'] ?? false;
-
-          // Get partner info
-          if (response.body['data']['partner'] != null) {
-            partner.value = User.fromJson(response.body['data']['partner']);
-          }
-
-          // Get connection streak
-          if (response.body['data']['connectionStreak'] != null) {
-            connectionStreak.value = response.body['data']['connectionStreak'];
-          }
-
-          // Get user's own connection code
-          if (response.body['data']['connectionCode'] != null) {
-            connectionCode.value = response.body['data']['connectionCode'];
-          }
-        }
-      }
-    } catch (e) {
-      print('Error getting partner info: $e');
-    } finally {
-      isLoadingPartnerInfo(false);
-      update();
-    }
-  }
 
   // Refresh all data
   Future<void> refreshData() async {
-    await Future.wait([
-      getPartnerInfo(),
-      generateConnectionCode(),
-    ]);
+    getLocalData();
   }
 }

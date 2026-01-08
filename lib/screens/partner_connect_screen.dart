@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:lovereminder/helpers/prefs_helper.dart';
+import 'package:lovereminder/utils/app_constant.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:async';
 import '../controllers/couple_controller.dart';
@@ -23,6 +25,7 @@ class _PartnerConnectScreenState extends State<PartnerConnectScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  String inviteCode = "";
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _PartnerConnectScreenState extends State<PartnerConnectScreen>
     _setupAnimations();
     _loadData();
   }
+
 
   void _loadData() async {
     await _coupleController.refreshData();
@@ -65,7 +69,7 @@ class _PartnerConnectScreenState extends State<PartnerConnectScreen>
       } else {
         timer.cancel();
         // Regenerate code when expired
-        _coupleController.generateConnectionCode();
+        _coupleController.getLocalData();
         _minutesRemaining = 60;
         _startTimer();
       }

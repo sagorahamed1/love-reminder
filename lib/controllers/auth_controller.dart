@@ -1,22 +1,17 @@
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import '../helpers/prefs_helper.dart';
 import '../models/user.dart' as AppUser;
 import '../services/api_client.dart';
 import '../services/api_constants.dart';
 import '../services/shared_prefs_service.dart';
-import '../services/socket_services.dart';
 import '../utils/app_constant.dart';
 
 class AuthController extends GetxController {
-  Rxn<AppUser.User> user = Rxn<AppUser.User>();
   RxBool isLoading = false.obs;
 
-  bool get isAuthenticated => user.value != null;
 
   // Check if user has completed onboarding
   Future<bool> get hasCompletedOnboarding async {
@@ -28,12 +23,6 @@ class AuthController extends GetxController {
     isLoading.value = true;
     update();
     Future.delayed(const Duration(seconds: 2), () {
-      user.value = AppUser.User(
-        id: '1',
-        email: 'sarah@example.com',
-        name: 'Sarah',
-        createdAt: DateTime.now(),
-      );
       isLoading.value = false;
       update();
     });
@@ -44,12 +33,7 @@ class AuthController extends GetxController {
     update();
     try {
       await Future.delayed(const Duration(seconds: 1));
-      user.value = AppUser.User(
-        id: '1',
-        email: email,
-        name: email.split('@')[0],
-        createdAt: DateTime.now(),
-      );
+
     } catch (e) {
       throw Exception('Login failed: $e');
     } finally {
@@ -63,12 +47,12 @@ class AuthController extends GetxController {
     update();
     try {
       await Future.delayed(const Duration(seconds: 1));
-      user.value = AppUser.User(
-        id: '1',
-        email: email,
-        name: name,
-        createdAt: DateTime.now(),
-      );
+      // user.value = AppUser.User(
+      //   id: '1',
+      //   email: email,
+      //   name: name,
+      //   createdAt: DateTime.now(),
+      // );
     } catch (e) {
       throw Exception('Signup failed: $e');
     } finally {
@@ -120,15 +104,15 @@ class AuthController extends GetxController {
 
       if (firebaseUser != null) {
         // Create user object using Firebase user info with fallbacks
-        user.value = AppUser.User(
-          id: firebaseUser.uid,
-          email: firebaseUser.email ?? googleUser.email ?? '',
-          name:
-              firebaseUser.displayName ??
-              googleUser.displayName ??
-              'Google User',
-          createdAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
-        );
+        // user.value = AppUser.User(
+        //   id: firebaseUser.uid,
+        //   email: firebaseUser.email ?? googleUser.email ?? '',
+        //   name:
+        //       firebaseUser.displayName ??
+        //       googleUser.displayName ??
+        //       'Google User',
+        //   createdAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
+        // );
       } else {
         throw Exception('Sign in failed. Firebase user is null.');
       }
@@ -206,7 +190,6 @@ class AuthController extends GetxController {
   }
 
   void logout() {
-    user.value = null;
     update();
   }
 
@@ -241,6 +224,7 @@ class AuthController extends GetxController {
       );
       PrefsHelper.setString(AppConstants.email, "user@gmail.com");
       PrefsHelper.setString(AppConstants.name, data["user"]['name']);
+      PrefsHelper.setString(AppConstants.inviteCode, data["user"]['code']);
       PrefsHelper.setString(AppConstants.image, data["user"]['profileImage']);
       PrefsHelper.setString(AppConstants.userId, data["user"]['_id']);
       PrefsHelper.setBool(AppConstants.isLogged, true);
@@ -250,6 +234,8 @@ class AuthController extends GetxController {
 
 
       logInLoading(false);
+
+      PrefsHelper.setString(AppConstants.partnerName, data["user"]['partner']["name"]);
 
       // SocketServices socketServices = SocketServices();
       // socketServices.init(userId: data["user"]['_id'], fcmToken: "nai");
