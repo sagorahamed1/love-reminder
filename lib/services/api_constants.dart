@@ -7,7 +7,7 @@ class ApiConstants{
 
 
   static const String baseUrl = "https://6c0hk6c2-8089.inc1.devtunnels.ms/api/v1";
-  static const String imageBaseUrl = "https://6c0hk6c2-8089.inc1.devtunnels.ms/upload/";
+  static const String imageBaseUrl = "https://6c0hk6c2-8089.inc1.devtunnels.ms/uploads/";
   static const String socketBaseUrl = "https://6c0hk6c2-8089.inc1.devtunnels.ms";
 
 

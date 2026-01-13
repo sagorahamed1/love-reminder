@@ -82,6 +82,8 @@ class MemoryController extends GetxController {
     isCreating.value = true;
 
     try {
+
+
       var body = {
         'title': title,
         'message': message,
@@ -128,7 +130,9 @@ class MemoryController extends GetxController {
 
         if (response.statusCode == 201) {
           List<String> uploadedFiles = List<String>.from(response.body['data']);
-          imageUrls.addAll(uploadedFiles.map((x) => "${ApiConstants.imageBaseUrl}$uploadedFiles"));
+          imageUrls.addAll(uploadedFiles.map((x) => "${ApiConstants.imageBaseUrl}$x"));
+
+
         } else {
           throw Exception('Failed to upload image: ${response.statusText}');
         }
